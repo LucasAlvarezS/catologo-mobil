@@ -30,16 +30,27 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect admin routes - redirect to login if not authenticated
-  if (request.nextUrl.pathname.startsWith("/admin") && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/auth/login"
-    return NextResponse.redirect(url)
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/auth/login"
+      return NextResponse.redirect(url)
+    }
+
+    // Check if user is admin
+    const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map((email) => email.trim().toLowerCase())
+    if (!adminEmails.includes(user.email?.toLowerCase() || "")) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/"
+      return NextResponse.redirect(url)
+    }
   }
 
-  // Redirect logged in users from auth pages to admin
+  // Redirect logged in users from auth pages to home or admin
   if (request.nextUrl.pathname.startsWith("/auth") && user) {
     const url = request.nextUrl.clone()
-    url.pathname = "/admin"
+    const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map((email) => email.trim().toLowerCase())
+    url.pathname = adminEmails.includes(user.email?.toLowerCase() || "") ? "/admin" : "/"
     return NextResponse.redirect(url)
   }
 

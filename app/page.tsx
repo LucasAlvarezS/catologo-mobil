@@ -129,33 +129,57 @@ export default async function HomePage({
   const hasFilters = params.q || params.marca || params.tags || params.min_price || params.max_price
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <Header />
       <main className="container px-4 py-6">
+        {/* Hero Section */}
+        <div className="mb-12 pt-4">
+          <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 rounded-2xl p-8 md:p-12 text-white shadow-xl">
+            <div className="max-w-2xl">
+              <h1 className="text-4xl md:text-5xl font-bold mb-3">Los Mejores Teléfonos</h1>
+              <p className="text-lg text-blue-100 mb-4">Descubre nuestro catálogo de smartphones de última tecnología</p>
+              <p className="text-sm text-blue-200 flex items-center gap-2">
+                <span className="text-2xl">✓</span>
+                Precios competitivos • Productos en stock • Consulta sin compromiso por WhatsApp
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Search */}
-        <div className="mb-6">
-          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+        <div className="mb-8">
+          <Suspense fallback={<Skeleton className="h-12 w-full rounded-lg" />}>
             <SearchBar />
           </Suspense>
         </div>
 
         {/* Categories (only show when no filters active) */}
-        {!hasFilters && <CategorySection />}
+        {!hasFilters && (
+          <div className="mb-12">
+            <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+              <CategorySection />
+            </Suspense>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-8">
-          {/* Filters */}
-          <aside className="mb-6 lg:mb-0">
-            <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-              <PhoneFilters brands={brands} tags={tags} maxPrice={maxPrice} />
-            </Suspense>
+          {/* Filters Sidebar */}
+          <aside className="mb-8 lg:mb-0">
+            <div className="sticky top-24">
+              <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                <PhoneFilters brands={brands} tags={tags} maxPrice={maxPrice} />
+              </Suspense>
+            </div>
           </aside>
 
           {/* Phone Grid */}
           <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">{hasFilters ? "Resultados" : "Todos los teléfonos"}</h2>
-              <span className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+              <h2 className="text-2xl font-bold text-slate-900">
+                {hasFilters ? "Resultados de búsqueda" : "Catálogo Completo"}
+              </h2>
+              <span className="text-sm text-slate-600 bg-blue-50 px-4 py-2 rounded-full font-medium">
                 {phones.length} {phones.length === 1 ? "producto" : "productos"}
               </span>
             </div>

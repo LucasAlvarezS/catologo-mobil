@@ -21,6 +21,24 @@ interface PhoneFormProps {
   tags: Tag[]
 }
 
+/**
+ * Validates if a URL is a valid image URL
+ */
+function isValidImageUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url)
+    const validProtocols = ["http:", "https:"]
+    const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
+
+    if (!validProtocols.includes(urlObj.protocol)) return false
+
+    const pathname = urlObj.pathname.toLowerCase()
+    return validExtensions.some((ext) => pathname.endsWith(ext)) || !pathname // Allow URLs without extension (some CDNs)
+  } catch {
+    return false
+  }
+}
+
 export function PhoneForm({ phone, tags }: PhoneFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -61,6 +79,16 @@ export function PhoneForm({ phone, tags }: PhoneFormProps) {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+
+    // Validate image URLs
+    const imageUrls = [formData.foto_url, formData.foto_url_2, formData.foto_url_3].filter(Boolean)
+    for (const url of imageUrls) {
+      if (url && !isValidImageUrl(url)) {
+        setError(`URL de imagen inválida: ${url}`)
+        setIsLoading(false)
+        return
+      }
+    }
 
     const supabase = createClient()
 
