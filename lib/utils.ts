@@ -6,10 +6,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-MX", {
+  return new Intl.NumberFormat("es-CL", {
     style: "currency",
-    currency: "MXN",
-  }).format(price)
+    currency: "CLP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(price)
+    .replace(/[\s\u00A0]/g, "") // Remove spaces to ensure $1.099.999 format
 }
 
 export function generateWhatsAppLink(modelo: string, marca: string): string {

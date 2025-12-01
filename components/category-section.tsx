@@ -17,7 +17,7 @@ export function CategorySection() {
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold mb-6">Encuentra tu teléfono ideal</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Encuentra tu teléfono ideal</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {categories.map(([key, { label, color }]) => (
           <Link key={key} href={`/?tags=${key}`}>
