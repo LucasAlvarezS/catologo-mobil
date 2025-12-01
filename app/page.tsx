@@ -4,7 +4,6 @@ import { Header } from "@/components/header"
 import { SearchBar } from "@/components/search-bar"
 import { PhoneFilters } from "@/components/phone-filters"
 import { PhoneGrid } from "@/components/phone-grid"
-import { CategorySection } from "@/components/category-section"
 import type { TelefonoWithTags, Tag } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -28,7 +27,8 @@ async function getPhones(searchParams: SearchParams): Promise<TelefonoWithTags[]
         tags (
           id,
           nombre,
-          descripcion
+          descripcion,
+          color
         )
       )
     `)
@@ -105,13 +105,13 @@ async function getMaxPrice(): Promise<number> {
 
 function PhoneGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="flex flex-wrap justify-center gap-6">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="space-y-3">
+        <div key={i} className="w-full max-w-[280px] space-y-3">
           <Skeleton className="aspect-square rounded-lg" />
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-4 w-20 mx-auto" />
+          <Skeleton className="h-5 w-32 mx-auto" />
+          <Skeleton className="h-6 w-24 mx-auto" />
         </div>
       ))}
     </div>
@@ -131,19 +131,34 @@ export default async function HomePage({
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container px-4 py-6">
-        {/* Search */}
-        <div className="mb-6">
-          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
-            <SearchBar />
-          </Suspense>
+      <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="relative mb-12 py-16 md:py-24 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 shadow-2xl mx-auto max-w-7xl">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+          
+          <div className="relative z-10 px-4 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg">
+              Encuentra tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Smartphone Ideal</span>
+            </h1>
+            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto font-medium">
+              Compara precios, características y descubre la mejor opción para ti con nuestra Inteligencia Artificial.
+            </p>
+            
+            <div className="max-w-xl mx-auto mt-8 transform hover:scale-105 transition-transform duration-300">
+              <div className="bg-white p-2 rounded-2xl shadow-xl">
+                <Suspense fallback={<Skeleton className="h-12 w-full rounded-xl" />}>
+                  <SearchBar />
+                </Suspense>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Categories (only show when no filters active) */}
-        {!hasFilters && <CategorySection />}
-
+        
         {/* Main Content */}
-        <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-8">
+        <div className="lg:grid lg:grid-cols-[320px_1fr] lg:gap-10">
           {/* Filters */}
           <aside className="mb-6 lg:mb-0">
             <Suspense fallback={<Skeleton className="h-96 w-full" />}>
