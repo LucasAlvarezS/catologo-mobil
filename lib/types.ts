@@ -37,54 +37,6 @@ export interface TelefonoTag {
   tag_id: string
 }
 
-export interface CarritoItem {
-  id: string
-  user_id: string
-  telefono_id: string
-  cantidad: number
-  precio_unitario: number
-  created_at: string
-  updated_at: string
-}
-
-export interface CarritoItemWithPhone extends CarritoItem {
-  telefono: Telefono
-}
-
-export interface Orden {
-  id: string
-  user_id: string
-  numero_orden: string
-  estado: "pendiente" | "pagada" | "procesando" | "enviada" | "entregada" | "cancelada"
-  total: number
-  impuesto: number | null
-  envio: number | null
-  notas: string | null
-  cliente_nombre: string | null
-  cliente_email: string | null
-  cliente_telefono: string | null
-  cliente_ciudad: string | null
-  cliente_direccion: string | null
-  metodo_pago: "mercado_pago" | "transferencia" | "efectivo" | null
-  referencia_pago: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface OrdenItem {
-  id: string
-  orden_id: string
-  telefono_id: string
-  cantidad: number
-  precio_unitario: number
-  subtotal: number
-  created_at: string
-}
-
-export interface OrdenWithItems extends Orden {
-  items: (OrdenItem & { telefono: Telefono })[]
-}
-
 export const TAG_LABELS: Record<string, { label: string; color: string; icon: string }> = {
   uso_basico: { label: "Básico", color: "bg-slate-100 text-slate-700", icon: "📱" },
   redes_sociales: { label: "Redes Sociales", color: "bg-pink-100 text-pink-700", icon: "📸" },

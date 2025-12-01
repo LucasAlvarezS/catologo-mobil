@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { type TelefonoWithTags, TAG_LABELS } from "@/lib/types"
 import { formatPrice, generateWhatsAppLink } from "@/lib/utils"
-import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale } from "lucide-react"
+import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick } from "lucide-react"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -97,22 +97,22 @@ export default async function PhoneDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container px-4 py-6">
         {/* Back Button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-8 transition-colors font-medium"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al catálogo
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-10">
-          {/* Image Section - Premium */}
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Image Section */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 shadow-lg">
+            <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
               <Image
                 src={phone.foto_url || "/placeholder.svg?height=600&width=600&query=smartphone"}
                 alt={`${phone.marca} ${phone.modelo}`}
@@ -120,23 +120,18 @@ export default async function PhoneDetailPage({ params }: PageProps) {
                 className="object-contain p-8"
                 priority
               />
-              {hasDiscount && (
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                  -{Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}% OFF
-                </div>
+              {hasPlanPrice && (
+                <Badge className="absolute top-4 right-4 bg-emerald-500 text-white text-sm px-3 py-1">Con Plan</Badge>
               )}
-              <div className="absolute bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                ✓ En stock
-              </div>
             </div>
 
             {/* Thumbnail gallery */}
             {(phone.foto_url_2 || phone.foto_url_3) && (
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 {[phone.foto_url, phone.foto_url_2, phone.foto_url_3].filter(Boolean).map((url, i) => (
                   <div
                     key={i}
-                    className="relative w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-slate-200 hover:border-blue-400 transition-colors cursor-pointer shadow-sm hover:shadow-md"
+                    className="relative w-20 h-20 rounded-md overflow-hidden bg-muted border-2 border-transparent hover:border-primary transition-colors cursor-pointer"
                   >
                     <Image src={url || ""} alt={`${phone.modelo} vista ${i + 1}`} fill className="object-contain p-2" />
                   </div>
@@ -145,122 +140,129 @@ export default async function PhoneDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          {/* Info Section - Premium Sales Focused */}
+          {/* Info Section */}
           <div className="space-y-6">
             {/* Title & Brand */}
-            <div className="space-y-2">
-              <p className="text-sm text-blue-600 font-bold uppercase tracking-widest">{phone.marca}</p>
-              <h1 className="text-4xl font-bold text-slate-900">{phone.modelo}</h1>
-              {phone.descripcion_corta && <p className="text-lg text-slate-600 leading-relaxed">{phone.descripcion_corta}</p>}
+            <div>
+              <p className="text-sm text-muted-foreground uppercase tracking-wide font-medium">{phone.marca}</p>
+              <h1 className="text-3xl font-bold text-foreground mt-1">{phone.modelo}</h1>
+              {phone.descripcion_corta && <p className="text-muted-foreground mt-2">{phone.descripcion_corta}</p>}
             </div>
 
-            {/* Tags - Usage Categories */}
-            <div className="flex flex-wrap gap-2 pt-2">
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
               {phone.tags.map((tag) => {
                 const tagInfo = TAG_LABELS[tag.nombre]
                 return tagInfo ? (
-                  <Badge key={tag.id} className={`${tagInfo.color} text-sm font-semibold px-3 py-1 hover:scale-105 transition-transform`}>
+                  <Badge key={tag.id} variant="secondary" className={`${tagInfo.color} text-sm`}>
                     {tagInfo.label}
                   </Badge>
                 ) : null
               })}
             </div>
 
-            {/* Prices - Large & Prominent */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200 shadow-sm space-y-3">
-              {hasDiscount ? (
-                <div className="space-y-2">
-                  <p className="text-slate-600 text-sm font-medium">Precio promocional</p>
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-5xl font-bold text-blue-600">{formatPrice(phone.precio_descuento!)}</span>
-                    <span className="text-xl text-slate-500 line-through">{formatPrice(phone.precio_lista)}</span>
+            {/* Prices */}
+            <Card>
+              <CardContent className="p-4 space-y-4">
+                {/* Precio con Plan - Principal */}
+                {hasPlanPrice && (
+                  <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg">
+                    <p className="text-sm text-emerald-700 font-medium mb-1">Precio con Plan</p>
+                    <span className="text-4xl font-bold text-emerald-600">{formatPrice(phone.precio_plan!)}</span>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium pt-2">({formatPrice(phone.precio_descuento!)})</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-slate-600 text-sm font-medium">Precio</p>
-                  <span className="text-5xl font-bold text-slate-900">{formatPrice(phone.precio_lista)}</span>
-                  <p className="text-xs text-slate-500 font-medium pt-2">({formatPrice(phone.precio_lista)})</p>
-                </div>
-              )}
+                )}
 
-              {hasPlanPrice && (
-                <div className="flex items-center gap-3 bg-white rounded-lg p-3 mt-4">
-                  <span className="text-2xl">📱</span>
-                  <div>
-                    <p className="text-xs text-slate-600 font-medium">CON PLAN</p>
-                    <p className="text-2xl font-bold text-emerald-600">{formatPrice(phone.precio_plan!)}</p>
-                    <p className="text-xs text-slate-500 font-medium">({formatPrice(phone.precio_plan!)})</p>
+                {/* Precio Oferta - Secundario */}
+                {hasDiscount && (
+                  <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm text-red-700 font-medium">Precio Oferta</p>
+                      <Badge variant="destructive" className="text-xs">
+                        -{Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}%
+                      </Badge>
+                    </div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-3xl font-bold text-red-600">{formatPrice(phone.precio_descuento!)}</span>
+                      <span className="text-lg text-muted-foreground line-through">
+                        {formatPrice(phone.precio_lista)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="pt-3 border-t border-blue-200">
-                <p className="text-xs text-blue-600 font-bold flex items-center gap-1">Todos los precios con IVA incluido</p>
-              </div>
-            </div>
+                {/* Precio de Lista - Si no hay ofertas ni plan */}
+                {!hasPlanPrice && !hasDiscount && (
+                  <div className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Precio</p>
+                    <span className="text-3xl font-bold text-foreground">{formatPrice(phone.precio_lista)}</span>
+                  </div>
+                )}
 
-            {/* Action Buttons */}
-            <div className="space-y-3 pt-2">
-              <Button asChild size="lg" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-lg py-6 font-semibold shadow-lg">
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Consultar por WhatsApp
-                </a>
-              </Button>
-              
-              <Button variant="outline" size="lg" className="w-full border-2 border-blue-200 hover:bg-blue-50 text-slate-900 py-6 font-semibold">
-                <Scale className="w-5 h-5 mr-2" />
-                Comparar con otro modelo
-              </Button>
-            </div>
+                {/* Precio de lista como referencia si hay descuento pero no plan */}
+                {!hasPlanPrice && hasDiscount && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Precio de lista: {formatPrice(phone.precio_lista)}
+                  </p>
+                )}
 
-            <Separator className="my-4" />
+                {/* Precio sin plan como referencia si hay precio con plan */}
+                {hasPlanPrice && !hasDiscount && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Sin plan: {formatPrice(phone.precio_lista)}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
-            {/* Specifications - Grid */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <span className="text-2xl">⚙️</span>
-                Especificaciones Técnicas
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
+            {/* WhatsApp Button */}
+            <Button asChild size="lg" className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white text-lg py-6">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Consultar por WhatsApp
+              </a>
+            </Button>
+
+            <Separator />
+
+            {/* Specifications */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Especificaciones</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
                 {specs.map((spec, i) => (
-                  <div key={i} className="bg-slate-50 rounded-lg p-4 border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 flex-shrink-0">{spec.icon}</div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-slate-600 font-medium uppercase tracking-wide">{spec.label}</p>
-                        <p className="font-bold text-slate-900 text-sm mt-1 break-words">{spec.value}</p>
-                      </div>
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="p-2 rounded-md bg-muted text-muted-foreground">{spec.icon}</div>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">{spec.label}</p>
+                      <p className="font-medium">{spec.value}</p>
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            {/* Usage Tags Explained - Educational */}
+            {/* Usage Tags Explained */}
             {phone.tags.length > 0 && (
-              <div className="space-y-4 pt-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <span className="text-2xl">✨</span>
-                  ¿Para qué sirve este celular?
-                </h2>
-                <div className="space-y-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Ideal para</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   {phone.tags.map((tag) => {
                     const tagInfo = TAG_LABELS[tag.nombre]
                     const description = TAG_DESCRIPTIONS[tag.nombre]
                     return tagInfo && description ? (
-                      <div key={tag.id} className="flex items-start gap-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
-                        <Badge className={`${tagInfo.color} flex-shrink-0 mt-0.5 font-semibold`}>
+                      <div key={tag.id} className="flex items-start gap-3">
+                        <Badge variant="secondary" className={`${tagInfo.color} shrink-0 mt-0.5`}>
                           {tagInfo.label}
                         </Badge>
-                        <p className="text-sm text-slate-700 leading-relaxed font-medium">{description}</p>
+                        <p className="text-sm text-muted-foreground">{description}</p>
                       </div>
                     ) : null
                   })}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
