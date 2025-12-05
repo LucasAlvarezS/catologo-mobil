@@ -20,7 +20,16 @@ async function getPhone(id: string): Promise<TelefonoWithTags | null> {
         tags (
           id,
           nombre,
-          descripcion
+          descripcion,
+          color
+        )
+      ),
+      phone_box_contents (
+        box_content_id,
+        box_contents (
+          id,
+          name,
+          icon
         )
       )
     `)
@@ -35,6 +44,7 @@ async function getPhone(id: string): Promise<TelefonoWithTags | null> {
   return {
     ...data,
     tags: data.telefono_tags?.map((tt: any) => tt.tags).filter(Boolean) || [],
+    box_contents: data.phone_box_contents?.map((pbc: any) => pbc.box_contents).filter(Boolean) || [],
   }
 }
 
