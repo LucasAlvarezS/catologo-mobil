@@ -82,16 +82,20 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
     selectedBrands.length > 0 || selectedTags.length > 0 || priceRange[0] > 0 || priceRange[1] < maxPrice
 
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Brands */}
       <div>
-        <Label className="text-sm font-semibold mb-3 block">Marca</Label>
-        <div className="flex flex-wrap gap-2">
+        <Label className="text-lg font-bold text-red-950 mb-4 block">Marca</Label>
+        <div className="flex flex-wrap gap-3">
           {brands.map((brand) => (
             <Badge
               key={brand}
               variant={selectedBrands.includes(brand) ? "default" : "outline"}
-              className="cursor-pointer transition-colors"
+              className={`cursor-pointer transition-all px-6 py-3 text-base font-bold ${
+                selectedBrands.includes(brand)
+                  ? "bg-red-600 hover:bg-red-700 border-red-600 text-white shadow-md"
+                  : "border-red-200 text-red-800 hover:border-red-400 hover:bg-red-50 bg-white"
+              }`}
               onClick={() => toggleBrand(brand)}
             >
               {brand}
@@ -102,50 +106,78 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
 
       {/* Tags */}
       <div>
-        <Label className="text-sm font-semibold mb-3 block">Tipo de Uso</Label>
-        <div className="flex flex-wrap gap-2">
+        <Label className="text-lg font-bold text-red-950 mb-4 block">Tipo de Uso</Label>
+        <div className="flex flex-wrap gap-3">
           {tags.map((tag) => {
             const tagInfo = TAG_LABELS[tag.nombre]
-            return tagInfo ? (
+            const label = tagInfo ? tagInfo.label : tag.nombre
+            const isSelected = selectedTags.includes(tag.nombre)
+            
+            let badgeStyle = {}
+            if (isSelected) {
+              if (tag.color) {
+                badgeStyle = { backgroundColor: tag.color, borderColor: tag.color }
+              } else {
+                badgeStyle = { backgroundColor: '#dc2626', borderColor: '#dc2626' }
+              }
+            }
+
+            return (
               <Badge
                 key={tag.id}
-                variant={selectedTags.includes(tag.nombre) ? "default" : "outline"}
-                className="cursor-pointer transition-colors"
+                variant={isSelected ? "default" : "outline"}
+                className={`cursor-pointer transition-all px-6 py-3 text-base font-bold ${
+                  isSelected
+                    ? "text-white shadow-md"
+                    : "border-red-200 text-red-800 hover:border-red-400 hover:bg-red-50 bg-white"
+                }`}
+                style={badgeStyle}
                 onClick={() => toggleTag(tag.nombre)}
               >
-                {tagInfo.label}
+                {label}
               </Badge>
-            ) : null
+            )
           })}
         </div>
       </div>
 
       {/* Price Range */}
       <div>
-        <Label className="text-sm font-semibold mb-3 block">Rango de Precio</Label>
+        <Label className="text-lg font-bold text-red-950 mb-6 block">Rango de Precio</Label>
         <div className="px-2">
           <Slider
             value={priceRange}
             onValueChange={(value) => setPriceRange(value as [number, number])}
             max={maxPrice}
             min={0}
-            step={50}
-            className="my-4"
+            step={10000}
+            className="my-8 [&_[data-slot=slider-range]]:bg-red-600 [&_[data-slot=slider-thumb]]:border-red-600 [&_[data-slot=slider-thumb]]:ring-red-200"
           />
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{formatPrice(priceRange[0])}</span>
-            <span>{formatPrice(priceRange[1])}</span>
+          <div className="flex justify-between text-sm font-bold text-red-900">
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-red-100 shadow-sm">
+              {formatPrice(priceRange[0])}
+            </span>
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-red-100 shadow-sm">
+              {formatPrice(priceRange[1])}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-2 pt-4">
-        <Button variant="outline" onClick={clearFilters} className="flex-1 bg-transparent">
-          Limpiar
-        </Button>
-        <Button onClick={applyFilters} className="flex-1">
+      <div className="flex flex-col gap-3 pt-2">
+        <Button 
+          onClick={applyFilters} 
+          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-lg h-12 shadow-lg shadow-red-200 rounded-xl transition-all hover:scale-[1.02]"
+        >
           Aplicar Filtros
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={clearFilters} 
+          className="w-full text-red-600 hover:text-red-800 hover:bg-red-50 font-medium"
+        >
+          Limpiar todo
         </Button>
       </div>
     </div>
@@ -157,11 +189,11 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
       <div className="lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full bg-transparent">
-              <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Filtros
+            <Button variant="outline" className="w-full bg-white border-red-200 text-red-900 font-bold h-12 shadow-sm">
+              <SlidersHorizontal className="w-5 h-5 mr-2 text-red-600" />
+              Filtros y Preferencias
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2 bg-red-100 text-red-700">
                   {selectedBrands.length +
                     selectedTags.length +
                     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0)}
@@ -169,11 +201,11 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
               )}
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[80vh]">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+            <SheetHeader className="mb-6">
+              <SheetTitle className="text-2xl font-bold text-red-950">Filtros</SheetTitle>
             </SheetHeader>
-            <div className="mt-6 overflow-y-auto">
+            <div className="overflow-y-auto pb-8">
               <FilterContent />
             </div>
           </SheetContent>
@@ -182,11 +214,19 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
 
       {/* Desktop Filters */}
       <div className="hidden lg:block">
-        <div className="sticky top-4 p-4 border rounded-lg bg-card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Filtros</h3>
+        <div className="sticky top-24 p-8 rounded-3xl bg-gradient-to-br from-red-50 via-white to-red-50 border border-red-100 shadow-2xl">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="font-bold text-2xl text-red-950 flex items-center gap-3">
+              <SlidersHorizontal className="w-7 h-7 text-red-600" />
+              Filtros
+            </h3>
             {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={clearFilters}
+                className="text-red-600 hover:text-red-700 hover:bg-red-100 px-3 rounded-full"
+              >
                 <X className="w-4 h-4 mr-1" />
                 Limpiar
               </Button>

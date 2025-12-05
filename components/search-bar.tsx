@@ -32,29 +32,29 @@ export function SearchBar() {
   }
 
   return (
-    <form onSubmit={handleSearch} className="relative flex gap-2">
+    <form onSubmit={handleSearch} className="relative flex gap-2 w-full">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
         <Input
           type="text"
-          placeholder="Buscar modelo..."
+          placeholder="¿Qué modelo estás buscando?"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="pl-10 pr-10"
+          className="pl-12 pr-10 h-12 text-lg border-0 shadow-none focus-visible:ring-0 bg-transparent placeholder:text-slate-400"
         />
         {query && (
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-100 rounded-full"
             onClick={clearSearch}
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 text-slate-500" />
           </Button>
         )}
       </div>
-      <Button type="submit" className="shrink-0">
+      <Button type="submit" className="shrink-0 h-12 px-8 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all hover:shadow-lg">
         Buscar
       </Button>
     </form>
