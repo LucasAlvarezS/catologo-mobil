@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { type TelefonoWithTags, TAG_LABELS } from "@/lib/types"
 import { formatPrice, generateWhatsAppLink } from "@/lib/utils"
-import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter } from "lucide-react"
+import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter, Package } from "lucide-react"
 import { PhoneSelectorModal } from "@/components/phone-selector-modal"
 import { PhoneComparison } from "@/components/phone-comparison"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
@@ -413,6 +413,27 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                   })}
                 </div>
               </div>
+
+              {/* Box Contents */}
+              {phone.box_contents && phone.box_contents.length > 0 && (
+                <div className="space-y-4 pt-4">
+                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 justify-center">
+                    <Package className="w-6 h-6 text-blue-600" />
+                    Contenido de la Caja
+                  </h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {phone.box_contents.map((content) => (
+                      <div
+                        key={content.id}
+                        className="flex items-center gap-3 bg-slate-50 rounded-lg p-3 border border-slate-200"
+                      >
+                        <Check className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-slate-700">{content.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Usage Tags Explained - Educational */}
               {phone.tags.length > 0 && (

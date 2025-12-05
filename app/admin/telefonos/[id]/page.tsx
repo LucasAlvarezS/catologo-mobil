@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { PhoneForm } from "@/components/admin/phone-form"
-import type { TelefonoWithTags, Tag } from "@/lib/types"
+import type { TelefonoWithTags, Tag, BoxContent } from "@/lib/types"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -18,7 +18,16 @@ async function getPhone(id: string): Promise<TelefonoWithTags | null> {
         tags (
           id,
           nombre,
-          descripcion
+          descripcion,
+          color
+        )
+      ),
+      phone_box_contents (
+        box_content_id,
+        box_contents (
+          id,
+          name,
+          icon
         )
       )
     `)
@@ -30,6 +39,7 @@ async function getPhone(id: string): Promise<TelefonoWithTags | null> {
   return {
     ...data,
     tags: data.telefono_tags?.map((tt: any) => tt.tags).filter(Boolean) || [],
+    box_contents: data.phone_box_contents?.map((pbc: any) => pbc.box_contents).filter(Boolean) || [],
   }
 }
 
@@ -39,9 +49,15 @@ async function getTags(): Promise<Tag[]> {
   return data || []
 }
 
+async function getBoxContents(): Promise<BoxContent[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("box_contents").select("*")
+  return data || []
+}
+
 export default async function EditPhonePage({ params }: PageProps) {
   const { id } = await params
-  const [phone, tags] = await Promise.all([getPhone(id), getTags()])
+  const [phone, tags, boxContents] = await Promise.all([getPhone(id), getTags(), getBoxContents()])
 
   if (!phone) {
     notFound()
@@ -55,7 +71,7 @@ export default async function EditPhonePage({ params }: PageProps) {
           {phone.marca} {phone.modelo}
         </p>
       </div>
-      <PhoneForm phone={phone} tags={tags} />
+      <PhoneForm phone={phone} tags={tags} boxContents={boxContents} />
     </div>
   )
 }

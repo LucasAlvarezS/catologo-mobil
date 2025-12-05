@@ -5,6 +5,12 @@ export interface Tag {
   color: string | null
 }
 
+export interface BoxContent {
+  id: string
+  name: string
+  icon: string | null
+}
+
 export interface Telefono {
   id: string
   marca: string
@@ -48,6 +54,7 @@ export interface Telefono {
 
 export interface TelefonoWithTags extends Telefono {
   tags: Tag[]
+  box_contents?: BoxContent[]
 }
 
 export interface TelefonoTag {
