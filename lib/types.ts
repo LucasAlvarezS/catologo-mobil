@@ -2,6 +2,13 @@ export interface Tag {
   id: string
   nombre: string
   descripcion: string | null
+  color: string | null
+}
+
+export interface BoxContent {
+  id: string
+  name: string
+  icon: string | null
 }
 
 export interface Telefono {
@@ -23,12 +30,31 @@ export interface Telefono {
   foto_url_3: string | null
   activo: boolean
   stock: number
+  tiene_ram_virtual?: boolean
+  tiene_almacenamiento_expandible?: boolean
+  colores?: { nombre: string; hex: string }[] | null
+  incluye_plan?: boolean
+  pie_inicial?: number
+  cantidad_cuotas?: number
+  nombre_plan?: string
+  info_gigas_plan?: string
+  precio_mensual_plan?: number
+  precio_mensual_plan_normal?: number
+  meses_plan_promocional?: number
+  planes?: {
+    nombre: string
+    gigas: string
+    precio_mensual: number
+    precio_mensual_normal: number
+    meses_promocion: number
+  }[] | null
   created_at: string
   updated_at: string
 }
 
 export interface TelefonoWithTags extends Telefono {
   tags: Tag[]
+  box_contents?: BoxContent[]
 }
 
 export interface TelefonoTag {
