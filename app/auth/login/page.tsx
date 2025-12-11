@@ -23,6 +23,10 @@ export default function LoginPage() {
     setError(null)
 
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.split(",") || []
+    
+    // Debugging: Check what emails are loaded
+    console.log("Emails autorizados (config):", adminEmails)
+    console.log("Email intentando ingresar:", email)
 
     if (adminEmails.length === 0) {
       setError("Error de configuración: Contacte al administrador")
