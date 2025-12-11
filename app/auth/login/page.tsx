@@ -22,16 +22,23 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
 
-    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.split(",") || []
+    
+    // Debugging: Check what emails are loaded
+    console.log("Emails autorizados (config):", adminEmails)
+    console.log("Email intentando ingresar:", email)
 
-    if (!adminEmail) {
+    if (adminEmails.length === 0) {
       setError("Error de configuración: Contacte al administrador")
       console.error("NEXT_PUBLIC_ADMIN_EMAIL no está definido en las variables de entorno")
       setIsLoading(false)
       return
     }
 
-    if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const isAuthorized = adminEmails.some((allowedEmail) => allowedEmail.trim().toLowerCase() === normalizedEmail)
+
+    if (!isAuthorized) {
       setError("Este correo no está autorizado para acceder al panel.")
       setIsLoading(false)
       return
