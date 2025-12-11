@@ -1,11 +1,11 @@
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"
-import { SearchBar } from "@/components/search-bar"
 import { PhoneFilters } from "@/components/phone-filters"
 import { PhoneGrid } from "@/components/phone-grid"
 import type { TelefonoWithTags, Tag } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 
 interface SearchParams {
   q?: string
@@ -137,20 +137,37 @@ export default async function HomePage({
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
           
-          <div className="relative z-10 px-4 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg">
-              Encuentra tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Smartphone Ideal</span>
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto font-medium">
-              Compara precios, características y descubre la mejor opción para ti con nuestra Inteligencia Artificial.
-            </p>
-            
-            <div className="max-w-xl mx-auto mt-8 transform hover:scale-105 transition-transform duration-300">
-              <div className="bg-white p-2 rounded-2xl shadow-xl">
-                <Suspense fallback={<Skeleton className="h-12 w-full rounded-xl" />}>
-                  <SearchBar />
-                </Suspense>
-              </div>
+          <div className="relative z-10 px-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="space-y-4 max-w-4xl mx-auto">
+              <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
+                Para optar a la portabilidad debes tener al menos <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">4 meses de antigüedad</span> y no poseer deuda en Claro
+              </h1>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Button 
+                asChild 
+                size="lg" 
+                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold text-lg h-14 px-8 shadow-lg"
+              >
+                <a href="https://sucursalvirtual.clarochile.cl/PagoExpress/index" target="_blank" rel="noopener noreferrer">
+                  Revisa si tienes deudas aquí
+                </a>
+              </Button>
+              
+              <Button 
+                asChild 
+                size="lg" 
+                className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-lg h-14 px-8 shadow-lg border-2 border-transparent"
+              >
+                <a 
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola Diego, tengo una deuda en Claro, me gustaría solicitar una portabilidad especial")}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  Evalúate aquí
+                </a>
+              </Button>
             </div>
           </div>
         </div>
