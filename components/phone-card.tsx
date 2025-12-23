@@ -69,12 +69,12 @@ export function PhoneCard({ phone }: PhoneCardProps) {
             </Badge>
           )}
           {phone.precio_portabilidad && (
-            <Badge className="absolute top-2 left-2 bg-blue-600 text-white shadow-sm flex items-center gap-1">
+            <Badge className="absolute top-2 left-2 bg-red-600 text-white shadow-sm flex items-center gap-1">
               <ArrowLeftRight className="w-3 h-3" /> Portabilidad
             </Badge>
           )}
           {!phone.precio_portabilidad && phone.precio_tarjeta_hites && (
-            <Badge className="absolute top-2 left-2 bg-red-600 text-white shadow-sm flex items-center gap-1">
+            <Badge className="absolute top-2 left-2 bg-blue-600 text-white shadow-sm flex items-center gap-1">
               <CreditCard className="w-3 h-3" /> Hites
             </Badge>
           )}
@@ -102,12 +102,20 @@ export function PhoneCard({ phone }: PhoneCardProps) {
               ) : (
                 <>
                   <div className="flex flex-col items-center">
-                    <span className={`text-xl font-bold ${primaryLabel === 'Tarjeta Hites' ? 'text-red-600' : primaryLabel === 'Portabilidad' ? 'text-blue-600' : 'text-slate-900'}`}>
+                    {primaryLabel === 'Tarjeta Hites' && (
+                       <Image src="/images/tarjetaHites.png" alt="Hites" width={40} height={25} className="object-contain h-5 w-auto mb-1" />
+                    )}
+                    <span className={`text-xl font-bold ${primaryLabel === 'Tarjeta Hites' ? 'text-blue-600' : primaryLabel === 'Portabilidad' ? 'text-red-600' : 'text-slate-900'}`}>
                       {formatPrice(primaryPrice)}
                     </span>
-                    {primaryLabel && (
+                    {primaryLabel && primaryLabel !== 'Tarjeta Hites' && (
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">
                         {primaryLabel}
+                      </span>
+                    )}
+                    {primaryLabel === 'Tarjeta Hites' && (
+                      <span className="text-[10px] text-blue-600 uppercase tracking-wide font-semibold">
+                        Tarjeta Hites
                       </span>
                     )}
                     {secondaryPrice && (

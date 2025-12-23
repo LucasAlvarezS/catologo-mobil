@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { type TelefonoWithTags, TAG_LABELS } from "@/lib/types"
 import { formatPrice, generateWhatsAppLink } from "@/lib/utils"
-import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter, Package, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter, Package, ChevronLeft, ChevronRight, Shield, ArrowLeftRight } from "lucide-react"
 import { PhoneSelectorModal } from "@/components/phone-selector-modal"
 import { PhoneComparison } from "@/components/phone-comparison"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
@@ -358,29 +358,32 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                   <div className="grid grid-cols-1 gap-4">
                     {/* 1. Portability Price (Highest Priority) */}
                     {phone.precio_portabilidad && (
-                      <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-200 text-center space-y-2 relative overflow-hidden shadow-sm">
-                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
+                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-200 text-center space-y-2 relative overflow-hidden shadow-sm">
+                        <div className="absolute top-0 right-0 bg-red-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
                           <ArrowLeftRight className="w-3 h-3" /> PORTABILIDAD
                         </div>
-                        <p className="text-sm text-blue-700 font-bold uppercase tracking-wide">Precio Portabilidad</p>
+                        <p className="text-sm text-red-700 font-bold uppercase tracking-wide">Precio Portabilidad</p>
                         <div className="flex items-center justify-center gap-3">
-                          <p className="text-4xl font-bold text-blue-900">{formatPrice(phone.precio_portabilidad)}</p>
+                          <p className="text-4xl font-bold text-red-900">{formatPrice(phone.precio_portabilidad)}</p>
                         </div>
-                        <p className="text-xs text-blue-600 font-medium">Cámbiate a nuestra compañía y obtén este precio</p>
+                        <p className="text-xs text-red-600 font-medium">Cámbiate a nuestra compañía y obtén este precio</p>
                       </div>
                     )}
 
                     {/* 2. Hites Card Price (Second Priority) */}
                     {phone.precio_tarjeta_hites && (
-                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-200 text-center space-y-2 relative overflow-hidden shadow-sm">
-                        <div className="absolute top-0 right-0 bg-red-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
+                      <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-200 text-center space-y-2 relative overflow-hidden shadow-sm">
+                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
                           <CreditCard className="w-3 h-3" /> TARJETA HITES
                         </div>
-                        <p className="text-sm text-red-700 font-bold uppercase tracking-wide">Precio Tarjeta Hites</p>
-                        <div className="flex items-center justify-center gap-3">
-                          <p className="text-4xl font-bold text-red-900">{formatPrice(phone.precio_tarjeta_hites)}</p>
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <Image src="/images/tarjetaHites.png" alt="Tarjeta Hites" width={60} height={40} className="object-contain h-8 w-auto" />
+                          <p className="text-sm text-blue-700 font-bold uppercase tracking-wide">Precio Tarjeta Hites</p>
                         </div>
-                        <p className="text-xs text-red-600 font-medium">Pagando con tu tarjeta Hites</p>
+                        <div className="flex items-center justify-center gap-3">
+                          <p className="text-4xl font-bold text-blue-900">{formatPrice(phone.precio_tarjeta_hites)}</p>
+                        </div>
+                        <p className="text-xs text-blue-600 font-medium">Pagando con tu tarjeta Hites</p>
                       </div>
                     )}
 

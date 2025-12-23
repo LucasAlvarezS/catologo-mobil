@@ -130,18 +130,24 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
   }
 
   const handleSpecChange = (category: string, field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      especificaciones: {
-        ...prev.especificaciones,
-        [category]: typeof prev.especificaciones?.[category as keyof typeof prev.especificaciones] === 'object' 
-          ? {
-              ...prev.especificaciones?.[category as keyof typeof prev.especificaciones],
-              [field]: value
-            }
-          : value
+    setFormData((prev) => {
+      // @ts-ignore
+      const currentCategory = prev.especificaciones?.[category]
+      const isObject = typeof currentCategory === 'object' && currentCategory !== null
+
+      return {
+        ...prev,
+        especificaciones: {
+          ...prev.especificaciones,
+          [category]: isObject
+            ? {
+                ...currentCategory,
+                [field]: value,
+              }
+            : { [field]: value },
+        },
       }
-    }))
+    })
   }
 
   const toggleTag = (tagId: string) => {
