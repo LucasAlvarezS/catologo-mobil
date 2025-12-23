@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,6 +28,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   const [formData, setFormData] = useState({
     marca: phone?.marca || "",
@@ -35,6 +37,9 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
     precio_lista: phone?.precio_lista?.toString() || "",
     precio_plan: phone?.precio_plan?.toString() || "",
     precio_descuento: phone?.precio_descuento?.toString() || "",
+    porcentaje_descuento: phone?.porcentaje_descuento?.toString() || "",
+    precio_portabilidad: phone?.precio_portabilidad?.toString() || "",
+    precio_tarjeta_hites: phone?.precio_tarjeta_hites?.toString() || "",
     ram: phone?.ram || "",
     almacenamiento: phone?.almacenamiento || "",
     procesador: phone?.procesador || "",
@@ -62,6 +67,13 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
       precio_mensual_normal: phone.precio_mensual_plan_normal || 0,
       meses_promocion: phone.meses_plan_promocional || 0
     }] : []),
+    especificaciones: phone?.especificaciones || {
+      pantalla: { tipo: "", pulgadas: "", resolucion: "", tasa_refresco: "", proteccion: "" },
+      bateria: { capacidad: "", carga_rapida: "", carga_inalambrica: "" },
+      camara: { trasera_principal: "", trasera_ultra_gran_angular: "", trasera_teleobjetivo: "", frontal_principal: "", video: "" },
+      sistema_operativo: "",
+      conectividad: { nfc: false, red: "", bluetooth: "", sim: "" },
+    },
   })
 
   const [newColorName, setNewColorName] = useState("")
@@ -82,7 +94,54 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    
+    if (name === 'porcentaje_descuento') {
+      const percent = parseFloat(value)
+      const listPrice = parseFloat(formData.precio_lista)
+      
+      if (!isNaN(percent) && !isNaN(listPrice)) {
+        const discountPrice = listPrice * (1 - percent / 100)
+        setFormData(prev => ({
+          ...prev,
+          [name]: value,
+          precio_descuento: Math.round(discountPrice).toString()
+        }))
+        return
+      }
+    }
+
+    if (name === 'precio_lista') {
+       const listPrice = parseFloat(value)
+       // @ts-ignore - porcentaje_descuento exists in state but TS might not know it yet if inferred from initial state without explicit type
+       const percent = parseFloat(formData.porcentaje_descuento)
+       
+       if (!isNaN(percent) && !isNaN(listPrice)) {
+         const discountPrice = listPrice * (1 - percent / 100)
+         setFormData(prev => ({
+           ...prev,
+           [name]: value,
+           precio_descuento: Math.round(discountPrice).toString()
+         }))
+         return
+       }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSpecChange = (category: string, field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      especificaciones: {
+        ...prev.especificaciones,
+        [category]: typeof prev.especificaciones?.[category as keyof typeof prev.especificaciones] === 'object' 
+          ? {
+              ...prev.especificaciones?.[category as keyof typeof prev.especificaciones],
+              [field]: value
+            }
+          : value
+      }
+    }))
   }
 
   const toggleTag = (tagId: string) => {
@@ -187,6 +246,10 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
       precio_lista: Number.parseFloat(formData.precio_lista),
       precio_plan: formData.precio_plan ? Number.parseFloat(formData.precio_plan) : null,
       precio_descuento: formData.precio_descuento ? Number.parseFloat(formData.precio_descuento) : null,
+      // @ts-ignore
+      porcentaje_descuento: formData.porcentaje_descuento ? Number.parseInt(formData.porcentaje_descuento) : 0,
+      precio_portabilidad: formData.precio_portabilidad ? Number.parseFloat(formData.precio_portabilidad) : null,
+      precio_tarjeta_hites: formData.precio_tarjeta_hites ? Number.parseFloat(formData.precio_tarjeta_hites) : null,
       ram: formData.ram || null,
       almacenamiento: formData.almacenamiento || null,
       procesador: formData.procesador || null,
@@ -208,6 +271,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
       precio_mensual_plan_normal: formData.incluye_plan ? Number.parseFloat(formData.precio_mensual_plan_normal) : null,
       meses_plan_promocional: formData.incluye_plan ? Number.parseInt(formData.meses_plan_promocional) : null,
       planes: formData.incluye_plan ? formData.planes : [],
+      especificaciones: formData.especificaciones,
       updated_at: new Date().toISOString(),
     }
 
@@ -320,45 +384,109 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
       {/* Prices */}
       <Card>
         <CardHeader>
-          <CardTitle>Precios</CardTitle>
+          <CardTitle>Precios y Ofertas</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div className="grid gap-2">
-            <Label htmlFor="precio_lista">Precio Lista *</Label>
-            <Input
-              id="precio_lista"
-              name="precio_lista"
-              type="number"
-              step="0.01"
-              value={formData.precio_lista}
-              onChange={handleChange}
-              required
-              placeholder="999.99"
-            />
+        <CardContent className="space-y-6">
+          {/* Precio Base */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="precio_lista">Precio Lista (Base) *</Label>
+              <Input
+                id="precio_lista"
+                name="precio_lista"
+                type="number"
+                step="0.01"
+                value={formData.precio_lista}
+                onChange={handleChange}
+                required
+                placeholder="999990"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="porcentaje_descuento">% Descuento General</Label>
+              <Input
+                id="porcentaje_descuento"
+                name="porcentaje_descuento"
+                type="number"
+                min="0"
+                max="100"
+                // @ts-ignore
+                value={formData.porcentaje_descuento}
+                onChange={handleChange}
+                placeholder="20"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="precio_descuento">Precio Descuento (Calculado)</Label>
+              <Input
+                id="precio_descuento"
+                name="precio_descuento"
+                type="number"
+                step="0.01"
+                value={formData.precio_descuento}
+                onChange={handleChange}
+                placeholder="Calculado automáticamente"
+                readOnly
+                className="bg-slate-100"
+              />
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="precio_plan">Precio con Plan</Label>
-            <Input
-              id="precio_plan"
-              name="precio_plan"
-              type="number"
-              step="0.01"
-              value={formData.precio_plan}
-              onChange={handleChange}
-              placeholder="799.99"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="precio_descuento">Precio Descuento</Label>
-            <Input
-              id="precio_descuento"
-              name="precio_descuento"
-              type="number"
-              step="0.01"
-              value={formData.precio_descuento}
-              onChange={handleChange}
-              placeholder="899.99"
-            />
+
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-semibold mb-4">Precios Especiales</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-3 border p-4 rounded-lg bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="precio_portabilidad" className="font-medium">Precio Portabilidad</Label>
+                  <Switch 
+                    checked={!!formData.precio_portabilidad}
+                    onCheckedChange={(checked) => {
+                      if (!checked) setFormData(prev => ({ ...prev, precio_portabilidad: "" }))
+                      else setFormData(prev => ({ ...prev, precio_portabilidad: "0" }))
+                    }}
+                  />
+                </div>
+                {formData.precio_portabilidad !== "" && (
+                  <Input
+                    id="precio_portabilidad"
+                    name="precio_portabilidad"
+                    type="number"
+                    value={formData.precio_portabilidad}
+                    onChange={handleChange}
+                    placeholder="Ej: 199990"
+                  />
+                )}
+                <p className="text-xs text-slate-500">
+                  Precio exclusivo al portarse de compañía. Se mostrará como primera opción.
+                </p>
+              </div>
+
+              <div className="space-y-3 border p-4 rounded-lg bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="precio_tarjeta_hites" className="font-medium">Precio Tarjeta Hites</Label>
+                  <Switch 
+                    checked={!!formData.precio_tarjeta_hites}
+                    onCheckedChange={(checked) => {
+                      if (!checked) setFormData(prev => ({ ...prev, precio_tarjeta_hites: "" }))
+                      else setFormData(prev => ({ ...prev, precio_tarjeta_hites: "0" }))
+                    }}
+                  />
+                </div>
+                {formData.precio_tarjeta_hites !== "" && (
+                  <Input
+                    id="precio_tarjeta_hites"
+                    name="precio_tarjeta_hites"
+                    type="number"
+                    value={formData.precio_tarjeta_hites}
+                    onChange={handleChange}
+                    placeholder="Ej: 189990"
+                  />
+                )}
+                <p className="text-xs text-slate-500">
+                  Precio exclusivo pagando con Tarjeta Hites. Se mostrará como segunda opción.
+                </p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -438,6 +566,390 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
               onChange={handleChange}
               placeholder="6.7 AMOLED 120Hz"
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Specifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Detalles Técnicos (Avanzado)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Software */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Software</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>Tipo de Celular</Label>
+                <Input 
+                  value={formData.especificaciones?.software?.tipo_celular || ""} 
+                  onChange={(e) => handleSpecChange("software", "tipo_celular", e.target.value)}
+                  placeholder="Smartphone" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Condición</Label>
+                <Input 
+                  value={formData.especificaciones?.software?.condicion || ""} 
+                  onChange={(e) => handleSpecChange("software", "condicion", e.target.value)}
+                  placeholder="Nuevo / Reacondicionado" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Sistema Operativo (OS)</Label>
+                <Input 
+                  value={formData.especificaciones?.software?.os || ""} 
+                  onChange={(e) => handleSpecChange("software", "os", e.target.value)}
+                  placeholder="iOS / Android" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Versión</Label>
+                <Input 
+                  value={formData.especificaciones?.software?.version || ""} 
+                  onChange={(e) => handleSpecChange("software", "version", e.target.value)}
+                  placeholder="17 / 14" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Pantalla */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Pantalla</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Tamaño</Label>
+                <Input 
+                  value={formData.especificaciones?.pantalla?.tamano || ""} 
+                  onChange={(e) => handleSpecChange("pantalla", "tamano", e.target.value)}
+                  placeholder='6.1"' 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Resolución</Label>
+                <Input 
+                  value={formData.especificaciones?.pantalla?.resolucion || ""} 
+                  onChange={(e) => handleSpecChange("pantalla", "resolucion", e.target.value)}
+                  placeholder="2556 x 1179" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Densidad</Label>
+                <Input 
+                  value={formData.especificaciones?.pantalla?.densidad || ""} 
+                  onChange={(e) => handleSpecChange("pantalla", "densidad", e.target.value)}
+                  placeholder="460 ppi" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Cámara */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Cámara</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>Cantidad Traseras</Label>
+                <Input 
+                  value={formData.especificaciones?.camara?.trasera_cantidad || ""} 
+                  onChange={(e) => handleSpecChange("camara", "trasera_cantidad", e.target.value)}
+                  placeholder="2" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Principal (MP)</Label>
+                <Input 
+                  value={formData.especificaciones?.camara?.trasera_descripcion || ""} 
+                  onChange={(e) => handleSpecChange("camara", "trasera_descripcion", e.target.value)}
+                  placeholder="48 + 12 MP" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Frontal / Secundaria (MP)</Label>
+                <Input 
+                  value={formData.especificaciones?.camara?.frontal_descripcion || ""} 
+                  onChange={(e) => handleSpecChange("camara", "frontal_descripcion", e.target.value)}
+                  placeholder="12 MP" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Batería */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Batería</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Tipo</Label>
+                <Input 
+                  value={formData.especificaciones?.bateria?.tipo || ""} 
+                  onChange={(e) => handleSpecChange("bateria", "tipo", e.target.value)}
+                  placeholder="Li-ion" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Capacidad Exacta</Label>
+                <Input 
+                  value={formData.especificaciones?.bateria?.capacidad || ""} 
+                  onChange={(e) => handleSpecChange("bateria", "capacidad", e.target.value)}
+                  placeholder="3349 mAh" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Carga Rápida</Label>
+                <Input 
+                  value={formData.especificaciones?.bateria?.carga_rapida || ""} 
+                  onChange={(e) => handleSpecChange("bateria", "carga_rapida", e.target.value)}
+                  placeholder="Sí" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Memoria */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Memoria y SIM</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Tipo SIM</Label>
+                <Input 
+                  value={formData.especificaciones?.memoria?.sim_tipo || ""} 
+                  onChange={(e) => handleSpecChange("memoria", "sim_tipo", e.target.value)}
+                  placeholder="Nano SIM" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Dual SIM</Label>
+                <Input 
+                  value={formData.especificaciones?.memoria?.dual_sim || ""} 
+                  onChange={(e) => handleSpecChange("memoria", "dual_sim", e.target.value)}
+                  placeholder="Sí, (1 Nano + 1 eSIM)" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>eSIM</Label>
+                <Input 
+                  value={formData.especificaciones?.memoria?.esim || ""} 
+                  onChange={(e) => handleSpecChange("memoria", "esim", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>RAM</Label>
+                <Input 
+                  value={formData.especificaciones?.memoria?.ram || ""} 
+                  onChange={(e) => handleSpecChange("memoria", "ram", e.target.value)}
+                  placeholder="6 GB" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Interna</Label>
+                <Input 
+                  value={formData.especificaciones?.memoria?.almacenamiento || ""} 
+                  onChange={(e) => handleSpecChange("memoria", "almacenamiento", e.target.value)}
+                  placeholder="128 GB" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Procesador */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Procesador</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Chipset</Label>
+                <Input 
+                  value={formData.especificaciones?.procesador?.chipset || ""} 
+                  onChange={(e) => handleSpecChange("procesador", "chipset", e.target.value)}
+                  placeholder="A16 Bionic" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Núcleos</Label>
+                <Input 
+                  value={formData.especificaciones?.procesador?.nucleos || ""} 
+                  onChange={(e) => handleSpecChange("procesador", "nucleos", e.target.value)}
+                  placeholder="Hexa-Core" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Velocidad</Label>
+                <Input 
+                  value={formData.especificaciones?.procesador?.velocidad || ""} 
+                  onChange={(e) => handleSpecChange("procesador", "velocidad", e.target.value)}
+                  placeholder="2 x 3.46 GHz..." 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Dimensiones */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Dimensiones</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Medidas</Label>
+                <Input 
+                  value={formData.especificaciones?.dimensiones?.medidas || ""} 
+                  onChange={(e) => handleSpecChange("dimensiones", "medidas", e.target.value)}
+                  placeholder="147.6 x 71.6 x 7.8 mm" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Peso</Label>
+                <Input 
+                  value={formData.especificaciones?.dimensiones?.peso || ""} 
+                  onChange={(e) => handleSpecChange("dimensiones", "peso", e.target.value)}
+                  placeholder="171 g" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Índice SAR</Label>
+                <Input 
+                  value={formData.especificaciones?.dimensiones?.indice_sar || ""} 
+                  onChange={(e) => handleSpecChange("dimensiones", "indice_sar", e.target.value)}
+                  placeholder="1,14 W/Kg" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Contenido Caja */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Contenido Caja</h3>
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div className="grid gap-2">
+                <Label>Cable USB</Label>
+                <Input 
+                  value={formData.especificaciones?.contenido_caja?.cable || ""} 
+                  onChange={(e) => handleSpecChange("contenido_caja", "cable", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Cargador</Label>
+                <Input 
+                  value={formData.especificaciones?.contenido_caja?.cargador || ""} 
+                  onChange={(e) => handleSpecChange("contenido_caja", "cargador", e.target.value)}
+                  placeholder="NO" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Manual</Label>
+                <Input 
+                  value={formData.especificaciones?.contenido_caja?.manual || ""} 
+                  onChange={(e) => handleSpecChange("contenido_caja", "manual", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Audífonos</Label>
+                <Input 
+                  value={formData.especificaciones?.contenido_caja?.audifonos || ""} 
+                  onChange={(e) => handleSpecChange("contenido_caja", "audifonos", e.target.value)}
+                  placeholder="NO" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Tarjeta de Memoria</Label>
+                <Input 
+                  value={formData.especificaciones?.contenido_caja?.tarjeta_memoria || ""} 
+                  onChange={(e) => handleSpecChange("contenido_caja", "tarjeta_memoria", e.target.value)}
+                  placeholder="NO" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Sensores */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Sensores</h3>
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div className="grid gap-2">
+                <Label>Huella</Label>
+                <Input 
+                  value={formData.especificaciones?.sensores?.huella || ""} 
+                  onChange={(e) => handleSpecChange("sensores", "huella", e.target.value)}
+                  placeholder="NO" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Facial</Label>
+                <Input 
+                  value={formData.especificaciones?.sensores?.facial || ""} 
+                  onChange={(e) => handleSpecChange("sensores", "facial", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Luz</Label>
+                <Input 
+                  value={formData.especificaciones?.sensores?.luz || ""} 
+                  onChange={(e) => handleSpecChange("sensores", "luz", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Giroscopio</Label>
+                <Input 
+                  value={formData.especificaciones?.sensores?.giroscopio || ""} 
+                  onChange={(e) => handleSpecChange("sensores", "giroscopio", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t" />
+
+          {/* Protecciones */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Protecciones</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label>Agua</Label>
+                <Input 
+                  value={formData.especificaciones?.protecciones?.agua || ""} 
+                  onChange={(e) => handleSpecChange("protecciones", "agua", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Polvo</Label>
+                <Input 
+                  value={formData.especificaciones?.protecciones?.polvo || ""} 
+                  onChange={(e) => handleSpecChange("protecciones", "polvo", e.target.value)}
+                  placeholder="SÍ" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Clasificación IP</Label>
+                <Input 
+                  value={formData.especificaciones?.protecciones?.ip_rating || ""} 
+                  onChange={(e) => handleSpecChange("protecciones", "ip_rating", e.target.value)}
+                  placeholder="IP68" 
+                />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -641,22 +1153,79 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
         <CardHeader>
           <CardTitle>Imágenes</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-6">
-          <ImageUpload
-            label="Imagen Principal"
-            value={formData.foto_url}
-            onChange={(url) => setFormData((prev) => ({ ...prev, foto_url: url }))}
-          />
-          <div className="grid gap-6 sm:grid-cols-2">
+        <CardContent className="space-y-6">
+          {/* Preview Slider */}
+          <div className="space-y-4">
+            {/* Main Image Preview */}
+            <div className="relative aspect-square w-full max-w-md mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 shadow-sm">
+              <Image
+                src={
+                  [formData.foto_url, formData.foto_url_2, formData.foto_url_3][activeImageIndex] ||
+                  "/placeholder.svg?height=600&width=600&query=smartphone"
+                }
+                alt={`Vista previa ${activeImageIndex + 1}`}
+                fill
+                className="object-contain p-8"
+              />
+            </div>
+
+            {/* Thumbnails */}
+            <div className="flex justify-center gap-3">
+              {[formData.foto_url, formData.foto_url_2, formData.foto_url_3].map((url, i) => (
+                <div
+                  key={i}
+                  onClick={() => setActiveImageIndex(i)}
+                  className={`relative w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 transition-all cursor-pointer shadow-sm hover:shadow-md ${
+                    activeImageIndex === i
+                      ? "border-blue-600 ring-2 ring-blue-100 scale-105"
+                      : "border-slate-200 hover:border-blue-400"
+                  }`}
+                >
+                  {url ? (
+                    <Image src={url || "/placeholder.svg"} alt={`Thumbnail ${i + 1}`} fill className="object-contain p-2" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400 text-xs text-center p-1">
+                      Sin imagen
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 right-0 bg-slate-900/50 text-white text-[10px] px-1 rounded-tl">
+                    {i + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Image Uploader */}
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <Label className="text-base font-semibold">
+                {activeImageIndex === 0
+                  ? "Imagen Principal"
+                  : activeImageIndex === 1
+                    ? "Imagen Secundaria"
+                    : "Imagen Terciaria"}
+              </Label>
+              <span className="text-xs text-muted-foreground bg-white px-2 py-1 rounded border">
+                Editando imagen {activeImageIndex + 1} de 3
+              </span>
+            </div>
+
             <ImageUpload
-              label="Imagen Secundaria"
-              value={formData.foto_url_2}
-              onChange={(url) => setFormData((prev) => ({ ...prev, foto_url_2: url }))}
-            />
-            <ImageUpload
-              label="Imagen Terciaria"
-              value={formData.foto_url_3}
-              onChange={(url) => setFormData((prev) => ({ ...prev, foto_url_3: url }))}
+              label={`Subir ${
+                activeImageIndex === 0
+                  ? "Imagen Principal"
+                  : activeImageIndex === 1
+                    ? "Imagen Secundaria"
+                    : "Imagen Terciaria"
+              }`}
+              value={[formData.foto_url, formData.foto_url_2, formData.foto_url_3][activeImageIndex] || ""}
+              onChange={(url) => {
+                const keys = ["foto_url", "foto_url_2", "foto_url_3"] as const
+                // @ts-ignore
+                const key = keys[activeImageIndex]
+                setFormData((prev) => ({ ...prev, [key]: url }))
+              }}
             />
           </div>
         </CardContent>
