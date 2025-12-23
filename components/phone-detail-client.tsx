@@ -102,25 +102,25 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
     <>
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
         <Header />
-        <main className="container px-4 py-6">
+        <main className="container max-w-[1400px] mx-auto px-4 py-6 lg:py-10">
           {/* Back Button */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-8 transition-colors font-medium"
+            className="inline-flex items-center gap-2 text-lg text-slate-600 hover:text-blue-600 mb-8 transition-colors font-bold"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-6 h-6" />
             Volver al catálogo
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-10">
+          <div className="grid lg:grid-cols-[55%_45%] gap-8 lg:gap-20 items-start">
             {/* Image Section - Premium */}
-            <div className="space-y-4">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 shadow-lg group">
+            <div className="space-y-6 lg:sticky lg:top-24">
+              <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 shadow-xl group">
                 <Image
-                  src={selectedImage || "/placeholder.svg?height=600&width=600&query=smartphone"}
+                  src={selectedImage || "/placeholder.svg?height=800&width=800&query=smartphone"}
                   alt={`${phone.marca} ${phone.modelo}`}
                   fill
-                  className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
+                  className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                   priority
                 />
                 
@@ -178,13 +178,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
             </div>
 
             {/* Info Section - Premium Sales Focused */}
-            <div className="space-y-6">
+            <div className="space-y-8 py-2">
               {/* Title & Brand */}
               <div className="space-y-2 text-center">
                 <p className="text-sm text-blue-600 font-bold uppercase tracking-widest">{phone.marca}</p>
-                <h1 className="text-4xl font-bold text-slate-900">{phone.modelo}</h1>
+                <h1 className="text-4xl lg:text-5xl font-bold text-slate-900">{phone.modelo}</h1>
                 {phone.descripcion_corta && (
-                  <p className="text-lg text-slate-600 leading-relaxed">{phone.descripcion_corta}</p>
+                  <p className="text-lg lg:text-xl text-slate-600 leading-relaxed">{phone.descripcion_corta}</p>
                 )}
               </div>
 
@@ -247,14 +247,14 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     {/* Device Price Display */}
                     <div className="space-y-3">
                       {/* Precio con Plan */}
-                      <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-100 relative overflow-hidden flex justify-between items-center">
+                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-100 relative overflow-hidden flex justify-between items-center">
                         <div>
-                          <p className="text-blue-800 font-semibold text-sm mb-1">Precio con Plan</p>
-                          <span className="text-3xl font-bold text-blue-900 block">{formatPrice(basePrice)}</span>
+                          <p className="text-red-800 font-semibold text-base mb-1">Precio con Plan</p>
+                          <span className="text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
                         </div>
                         <div className="text-right">
                            {phone.precio_lista > basePrice && (
-                             <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+                             <div className="bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold">
                                Ahorras: {formatPrice(phone.precio_lista - basePrice)}
                              </div>
                            )}
@@ -263,24 +263,24 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
                       {/* Precio Tarjeta Hites */}
                       {phone.precio_tarjeta_hites && (
-                        <div className="bg-white rounded-xl p-4 border border-slate-200 relative overflow-hidden flex justify-between items-center shadow-sm">
+                        <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-100 relative overflow-hidden flex justify-between items-center shadow-sm">
                           <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-slate-700 font-semibold text-sm">Precio con Tarjeta</p>
-                              <div className="h-6 w-16 relative">
+                            <div className="flex items-center gap-3 mb-2">
+                              <p className="text-blue-800 font-semibold text-base">Pagando con tarjeta hites</p>
+                              <div className="h-8 w-20 relative">
                                 <Image 
-                                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Logo_Hites.svg/2560px-Logo_Hites.svg.png" 
+                                  src="https://pwjfrhjeusllvtfkkadf.supabase.co/storage/v1/object/public/telefonos/assets/tarjetaHites_new.png" 
                                   alt="Hites" 
                                   fill 
                                   className="object-contain" 
                                 />
                               </div>
                             </div>
-                            <span className="text-3xl font-bold text-slate-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
+                            <span className="text-4xl font-bold text-blue-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
                           </div>
                           <div className="text-right">
                              {phone.precio_lista > phone.precio_tarjeta_hites && (
-                               <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium">
+                               <div className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium">
                                  Ahorras: {formatPrice(phone.precio_lista - phone.precio_tarjeta_hites)}
                                </div>
                              )}
@@ -377,7 +377,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                           <CreditCard className="w-3 h-3" /> TARJETA HITES
                         </div>
                         <div className="flex flex-col items-center justify-center gap-1">
-                          <Image src="/images/tarjetaHites.png" alt="Tarjeta Hites" width={60} height={40} className="object-contain h-8 w-auto" />
+                          <Image 
+                            src="https://pwjfrhjeusllvtfkkadf.supabase.co/storage/v1/object/public/telefonos/assets/tarjetaHites_new.png" 
+                            alt="Tarjeta Hites" 
+                            width={80} 
+                            height={50} 
+                            className="object-contain h-12 w-auto" 
+                          />
                           <p className="text-sm text-blue-700 font-bold uppercase tracking-wide">Precio Tarjeta Hites</p>
                         </div>
                         <div className="flex items-center justify-center gap-3">
@@ -534,20 +540,20 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         Ver más características
                       </Button>
                     </SheetTrigger>
-                    <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-                      <SheetHeader className="mb-6">
-                        <SheetTitle>Especificaciones Técnicas</SheetTitle>
+                    <SheetContent className="w-full sm:max-w-md overflow-y-auto p-6 sm:p-8">
+                      <SheetHeader className="mb-8">
+                        <SheetTitle className="text-2xl">Especificaciones Técnicas</SheetTitle>
                       </SheetHeader>
                       
-                      <div className="space-y-6">
+                      <div className="space-y-8">
                         {/* Software */}
                         {phone.especificaciones.software && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Cpu className="h-5 w-5 text-primary" />
                               Software
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.software.tipo_celular && (
                                 <>
                                   <span className="text-slate-500">Tipo de Celular</span>
@@ -579,11 +585,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Pantalla */}
                         {phone.especificaciones.pantalla && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Smartphone className="h-5 w-5 text-primary" />
                               Pantalla
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.pantalla.tamano && (
                                 <>
                                   <span className="text-slate-500">Tamaño</span>
@@ -621,11 +627,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Cámara */}
                         {phone.especificaciones.camara && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Camera className="h-5 w-5 text-primary" />
                               Cámara
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.camara.trasera_cantidad && (
                                 <>
                                   <span className="text-slate-500">Cámaras Traseras</span>
@@ -651,11 +657,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Batería */}
                         {phone.especificaciones.bateria && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Battery className="h-5 w-5 text-primary" />
                               Batería
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.bateria.tipo && (
                                 <>
                                   <span className="text-slate-500">Tipo</span>
@@ -681,11 +687,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Memoria */}
                         {phone.especificaciones.memoria && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <HardDrive className="h-5 w-5 text-primary" />
                               Memoria
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.memoria.sim_tipo && (
                                 <>
                                   <span className="text-slate-500">Tipo de SIM</span>
@@ -723,11 +729,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Procesador */}
                         {phone.especificaciones.procesador && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Cpu className="h-5 w-5 text-primary" />
                               Procesador
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.procesador.chipset && (
                                 <>
                                   <span className="text-slate-500">Chipset</span>
@@ -753,11 +759,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Dimensiones */}
                         {phone.especificaciones.dimensiones && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Scale className="h-5 w-5 text-primary" />
                               Dimensiones
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.dimensiones.medidas && (
                                 <>
                                   <span className="text-slate-500">Medidas</span>
@@ -783,11 +789,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Contenido Caja */}
                         {phone.especificaciones.contenido_caja && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Package className="h-5 w-5 text-primary" />
                               Contenido Caja
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.contenido_caja.cable && (
                                 <>
                                   <span className="text-slate-500">Cable USB</span>
@@ -825,11 +831,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Sensores */}
                         {phone.especificaciones.sensores && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Wifi className="h-5 w-5 text-primary" />
                               Sensores
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.sensores.huella && (
                                 <>
                                   <span className="text-slate-500">Huella</span>
@@ -861,11 +867,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         {/* Protecciones */}
                         {phone.especificaciones.protecciones && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
                               <Shield className="h-5 w-5 text-primary" />
                               Protecciones
                             </h3>
-                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.protecciones.agua && (
                                 <>
                                   <span className="text-slate-500">Agua</span>

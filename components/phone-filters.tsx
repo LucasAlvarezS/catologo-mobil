@@ -85,7 +85,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
     <div className="space-y-8">
       {/* Brands */}
       <div>
-        <Label className="text-lg font-bold text-red-950 mb-4 block">Marca</Label>
+        <Label className="text-lg font-bold text-slate-900 mb-4 block">Marca</Label>
         <div className="flex flex-wrap gap-3">
           {brands.map((brand) => (
             <Badge
@@ -93,8 +93,8 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
               variant={selectedBrands.includes(brand) ? "default" : "outline"}
               className={`cursor-pointer transition-all px-6 py-3 text-base font-bold ${
                 selectedBrands.includes(brand)
-                  ? "bg-red-600 hover:bg-red-700 border-red-600 text-white shadow-md"
-                  : "border-red-200 text-red-800 hover:border-red-400 hover:bg-red-50 bg-white"
+                  ? "bg-slate-900 hover:bg-slate-800 border-slate-900 text-white shadow-md"
+                  : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 bg-white"
               }`}
               onClick={() => toggleBrand(brand)}
             >
@@ -106,7 +106,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
 
       {/* Tags */}
       <div>
-        <Label className="text-lg font-bold text-red-950 mb-4 block">Tipo de Uso</Label>
+        <Label className="text-lg font-bold text-slate-900 mb-4 block">Tipo de Uso</Label>
         <div className="flex flex-wrap gap-3">
           {tags.map((tag) => {
             const tagInfo = TAG_LABELS[tag.nombre]
@@ -118,7 +118,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
               if (tag.color) {
                 badgeStyle = { backgroundColor: tag.color, borderColor: tag.color }
               } else {
-                badgeStyle = { backgroundColor: '#dc2626', borderColor: '#dc2626' }
+                badgeStyle = { backgroundColor: '#0f172a', borderColor: '#0f172a' }
               }
             }
 
@@ -129,7 +129,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
                 className={`cursor-pointer transition-all px-6 py-3 text-base font-bold ${
                   isSelected
                     ? "text-white shadow-md"
-                    : "border-red-200 text-red-800 hover:border-red-400 hover:bg-red-50 bg-white"
+                    : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 bg-white"
                 }`}
                 style={badgeStyle}
                 onClick={() => toggleTag(tag.nombre)}
@@ -143,7 +143,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
 
       {/* Price Range */}
       <div>
-        <Label className="text-lg font-bold text-red-950 mb-6 block">Rango de Precio</Label>
+        <Label className="text-lg font-bold text-slate-900 mb-6 block">Rango de Precio</Label>
         <div className="px-2">
           <Slider
             value={priceRange}
@@ -151,13 +151,13 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
             max={maxPrice}
             min={0}
             step={10000}
-            className="my-8 [&_[data-slot=slider-range]]:bg-red-600 [&_[data-slot=slider-thumb]]:border-red-600 [&_[data-slot=slider-thumb]]:ring-red-200"
+            className="my-8 [&_[data-slot=slider-range]]:bg-slate-900 [&_[data-slot=slider-thumb]]:border-slate-900 [&_[data-slot=slider-thumb]]:ring-slate-200"
           />
-          <div className="flex justify-between text-sm font-bold text-red-900">
-            <span className="bg-white px-3 py-1.5 rounded-lg border border-red-100 shadow-sm">
+          <div className="flex justify-between text-sm font-bold text-slate-700">
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
               {formatPrice(priceRange[0])}
             </span>
-            <span className="bg-white px-3 py-1.5 rounded-lg border border-red-100 shadow-sm">
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
               {formatPrice(priceRange[1])}
             </span>
           </div>
@@ -168,14 +168,14 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
       <div className="flex flex-col gap-3 pt-2">
         <Button 
           onClick={applyFilters} 
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-lg h-12 shadow-lg shadow-red-200 rounded-xl transition-all hover:scale-[1.02]"
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-lg h-12 shadow-lg shadow-red-100 rounded-xl transition-all hover:scale-[1.02]"
         >
           Aplicar Filtros
         </Button>
         <Button 
           variant="ghost" 
           onClick={clearFilters} 
-          className="w-full text-red-600 hover:text-red-800 hover:bg-red-50 font-medium"
+          className="w-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 font-medium"
         >
           Limpiar todo
         </Button>
@@ -189,11 +189,11 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
       <div className="lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full bg-white border-red-200 text-red-900 font-bold h-12 shadow-sm">
-              <SlidersHorizontal className="w-5 h-5 mr-2 text-red-600" />
+            <Button variant="outline" className="w-full bg-white border-slate-200 text-slate-900 font-bold h-12 shadow-sm">
+              <SlidersHorizontal className="w-5 h-5 mr-2 text-slate-900" />
               Filtros y Preferencias
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2 bg-red-100 text-red-700">
+                <Badge variant="secondary" className="ml-2 bg-slate-100 text-slate-900">
                   {selectedBrands.length +
                     selectedTags.length +
                     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0)}
@@ -203,7 +203,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
             <SheetHeader className="mb-6">
-              <SheetTitle className="text-2xl font-bold text-red-950">Filtros</SheetTitle>
+              <SheetTitle className="text-2xl font-bold text-slate-900">Filtros</SheetTitle>
             </SheetHeader>
             <div className="overflow-y-auto pb-8">
               <FilterContent />
@@ -214,10 +214,10 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
 
       {/* Desktop Filters */}
       <div className="hidden lg:block">
-        <div className="sticky top-24 p-8 rounded-3xl bg-gradient-to-br from-red-50 via-white to-red-50 border border-red-100 shadow-2xl">
+        <div className="sticky top-24 p-8 rounded-3xl bg-white border border-slate-200 shadow-xl">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="font-bold text-2xl text-red-950 flex items-center gap-3">
-              <SlidersHorizontal className="w-7 h-7 text-red-600" />
+            <h3 className="font-bold text-2xl text-slate-900 flex items-center gap-3">
+              <SlidersHorizontal className="w-7 h-7 text-slate-900" />
               Filtros
             </h3>
             {hasActiveFilters && (
@@ -225,7 +225,7 @@ export function PhoneFilters({ brands, tags, maxPrice }: PhoneFiltersProps) {
                 variant="ghost" 
                 size="sm" 
                 onClick={clearFilters}
-                className="text-red-600 hover:text-red-700 hover:bg-red-100 px-3 rounded-full"
+                className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 px-3 rounded-full"
               >
                 <X className="w-4 h-4 mr-1" />
                 Limpiar

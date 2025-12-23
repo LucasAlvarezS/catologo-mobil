@@ -103,7 +103,13 @@ export function PhoneCard({ phone }: PhoneCardProps) {
                 <>
                   <div className="flex flex-col items-center">
                     {primaryLabel === 'Tarjeta Hites' && (
-                       <Image src="/images/tarjetaHites.png" alt="Hites" width={40} height={25} className="object-contain h-5 w-auto mb-1" />
+                       <Image 
+                         src="https://pwjfrhjeusllvtfkkadf.supabase.co/storage/v1/object/public/telefonos/assets/tarjetaHites_new.png" 
+                         alt="Hites" 
+                         width={50} 
+                         height={30} 
+                         className="object-contain h-8 w-auto mb-1" 
+                       />
                     )}
                     <span className={`text-xl font-bold ${primaryLabel === 'Tarjeta Hites' ? 'text-blue-600' : primaryLabel === 'Portabilidad' ? 'text-red-600' : 'text-slate-900'}`}>
                       {formatPrice(primaryPrice)}
