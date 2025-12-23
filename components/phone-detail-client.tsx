@@ -615,13 +615,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                           </div>
                         )}
 
-                        {/* Cámara */} flex items-center gap-2">
-                              <Camera className="h-5 w-5 text-primary" />
-                              Cámara
-                            
+                        {/* Cámara */}
                         {phone.especificaciones.camara && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2">Cámara</h3>
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Camera className="h-5 w-5 text-primary" />
+                              Cámara
+                            </h3>
                             <div className="grid grid-cols-2 gap-y-2 text-sm">
                               {phone.especificaciones.camara.trasera_cantidad && (
                                 <>
@@ -645,13 +645,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                           </div>
                         )}
 
-                        {/* Batería */} flex items-center gap-2">
-                              <Battery className="h-5 w-5 text-primary" />
-                              Batería
-                            
+                        {/* Batería */}
                         {phone.especificaciones.bateria && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2">Batería</h3>
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Battery className="h-5 w-5 text-primary" />
+                              Batería
+                            </h3>
                             <div className="grid grid-cols-2 gap-y-2 text-sm">
                               {phone.especificaciones.bateria.tipo && (
                                 <>
@@ -747,13 +747,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                           </div>
                         )}
 
-                        {/* Dimensiones */} flex items-center gap-2">
-                              <Scale className="h-5 w-5 text-primary" />
-                              Dimensiones
-                            
+                        {/* Dimensiones */}
                         {phone.especificaciones.dimensiones && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2">Dimensiones</h3>
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Scale className="h-5 w-5 text-primary" />
+                              Dimensiones
+                            </h3>
                             <div className="grid grid-cols-2 gap-y-2 text-sm">
                               {phone.especificaciones.dimensiones.medidas && (
                                 <>
@@ -777,13 +777,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                           </div>
                         )}
 
-                        {/* Contenido Caja */} flex items-center gap-2">
-                              <Package className="h-5 w-5 text-primary" />
-                              Contenido Caja
-                            
+                        {/* Contenido Caja */}
                         {phone.especificaciones.contenido_caja && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2">Contenido Caja</h3>
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Package className="h-5 w-5 text-primary" />
+                              Contenido Caja
+                            </h3>
                             <div className="grid grid-cols-2 gap-y-2 text-sm">
                               {phone.especificaciones.contenido_caja.cable && (
                                 <>
@@ -816,16 +816,16 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                 </>
                               )}
                             </div>
-                          </div> flex items-center gap-2">
-                              <Wifi className="h-5 w-5 text-primary" />
-                              Sensores
-                            
+                          </div>
                         )}
 
                         {/* Sensores */}
                         {phone.especificaciones.sensores && (
                           <div className="space-y-3">
-                            <h3 className="font-bold text-lg border-b pb-2">Sensores</h3>
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Wifi className="h-5 w-5 text-primary" />
+                              Sensores
+                            </h3>
                             <div className="grid grid-cols-2 gap-y-2 text-sm">
                               {phone.especificaciones.sensores.huella && (
                                 <>
