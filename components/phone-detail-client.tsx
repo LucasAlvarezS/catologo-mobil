@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { type TelefonoWithTags, TAG_LABELS } from "@/lib/types"
 import { formatPrice, generateWhatsAppLink } from "@/lib/utils"
-import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter, Package } from "lucide-react"
+import { ArrowLeft, MessageCircle, Cpu, HardDrive, Battery, Camera, Smartphone, MemoryStick, Scale, Check, Settings, Sparkles, CreditCard, Banknote, Wifi, Globe, Phone, Facebook, Instagram, Twitter, Package, ChevronLeft, ChevronRight } from "lucide-react"
 import { PhoneSelectorModal } from "@/components/phone-selector-modal"
 import { PhoneComparison } from "@/components/phone-comparison"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 interface PhoneDetailClientProps {
   phone: TelefonoWithTags
@@ -22,9 +23,26 @@ interface PhoneDetailClientProps {
 export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) {
   const [showSelector, setShowSelector] = useState(false)
   const [selectedForComparison, setSelectedForComparison] = useState<string[] | null>(null)
+  const [selectedImage, setSelectedImage] = useState(phone.foto_url)
 
-  const hasDiscount = phone.precio_descuento && phone.precio_descuento < phone.precio_lista
+  const hasDiscount = (phone.precio_descuento && phone.precio_descuento < phone.precio_lista) || (phone.porcentaje_descuento && phone.porcentaje_descuento > 0)
   const whatsappLink = generateWhatsAppLink(phone.modelo, phone.marca)
+
+  const images = [phone.foto_url, phone.foto_url_2, phone.foto_url_3].filter(Boolean) as string[]
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const currentIndex = images.indexOf(selectedImage || images[0])
+    const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1
+    setSelectedImage(images[prevIndex])
+  }
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const currentIndex = images.indexOf(selectedImage || images[0])
+    const nextIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1
+    setSelectedImage(images[nextIndex])
+  }
 
   // Financing calculation
   const basePrice = phone.precio_plan || phone.precio_lista
@@ -97,31 +115,55 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
           <div className="grid lg:grid-cols-2 gap-10">
             {/* Image Section - Premium */}
             <div className="space-y-4">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 shadow-lg">
+              <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 shadow-lg group">
                 <Image
-                  src={phone.foto_url || "/placeholder.svg?height=600&width=600&query=smartphone"}
+                  src={selectedImage || "/placeholder.svg?height=600&width=600&query=smartphone"}
                   alt={`${phone.marca} ${phone.modelo}`}
                   fill
-                  className="object-contain p-8"
+                  className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
                   priority
                 />
+                
+                {/* Navigation Arrows */}
+                {images.length > 1 && (
+                  <>
+                    <button 
+                      onClick={handlePrevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                      aria-label="Imagen anterior"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button 
+                      onClick={handleNextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                      aria-label="Siguiente imagen"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+
                 {hasDiscount && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                    -{Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}% OFF
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-bold shadow-lg z-10">
+                    -{phone.porcentaje_descuento ? phone.porcentaje_descuento : Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}% OFF
                   </div>
                 )}
-                <div className="absolute bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg flex items-center">
+                <div className="absolute bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg flex items-center z-10">
                   <Check className="w-4 h-4 mr-1" /> En stock
                 </div>
               </div>
 
               {/* Thumbnail gallery */}
-              {(phone.foto_url_2 || phone.foto_url_3) && (
-                <div className="flex gap-3">
-                  {[phone.foto_url, phone.foto_url_2, phone.foto_url_3].filter(Boolean).map((url, i) => (
+              {images.length > 1 && (
+                <div className="flex gap-3 justify-center">
+                  {images.map((url, i) => (
                     <div
                       key={i}
-                      className="relative w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-slate-200 hover:border-blue-400 transition-colors cursor-pointer shadow-sm hover:shadow-md"
+                      onClick={() => setSelectedImage(url)}
+                      className={`relative w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 transition-colors cursor-pointer shadow-sm hover:shadow-md ${
+                        selectedImage === url ? "border-blue-600 ring-2 ring-blue-100" : "border-slate-200 hover:border-blue-400"
+                      }`}
                     >
                       <Image
                         src={url || ""}
@@ -203,24 +245,53 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     )}
 
                     {/* Device Price Display */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-100 text-center space-y-1 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-2 py-1 rounded-bl-lg font-bold">
-                          MEJOR PRECIO
+                    <div className="space-y-3">
+                      {/* Precio con Plan */}
+                      <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-100 relative overflow-hidden flex justify-between items-center">
+                        <div>
+                          <p className="text-blue-800 font-semibold text-sm mb-1">Precio con Plan</p>
+                          <span className="text-3xl font-bold text-blue-900 block">{formatPrice(basePrice)}</span>
                         </div>
-                        <p className="text-blue-800 font-semibold text-sm">Precio con Plan</p>
-                        <span className="text-3xl font-bold text-blue-900 block">{formatPrice(basePrice)}</span>
-                        {hasDiscount && (
-                           <p className="text-xs text-blue-600/70">
-                            Ahorras: {formatPrice(phone.precio_lista - basePrice)}
-                           </p>
-                        )}
+                        <div className="text-right">
+                           {phone.precio_lista > basePrice && (
+                             <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+                               Ahorras: {formatPrice(phone.precio_lista - basePrice)}
+                             </div>
+                           )}
+                        </div>
                       </div>
 
-                      <div className="bg-white rounded-xl p-4 border border-slate-200 text-center space-y-1 flex flex-col justify-center">
+                      {/* Precio Tarjeta Hites */}
+                      {phone.precio_tarjeta_hites && (
+                        <div className="bg-white rounded-xl p-4 border border-slate-200 relative overflow-hidden flex justify-between items-center shadow-sm">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-slate-700 font-semibold text-sm">Precio con Tarjeta</p>
+                              <div className="h-6 w-16 relative">
+                                <Image 
+                                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Logo_Hites.svg/2560px-Logo_Hites.svg.png" 
+                                  alt="Hites" 
+                                  fill 
+                                  className="object-contain" 
+                                />
+                              </div>
+                            </div>
+                            <span className="text-3xl font-bold text-slate-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
+                          </div>
+                          <div className="text-right">
+                             {phone.precio_lista > phone.precio_tarjeta_hites && (
+                               <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium">
+                                 Ahorras: {formatPrice(phone.precio_lista - phone.precio_tarjeta_hites)}
+                               </div>
+                             )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Precio Prepago (Normal) */}
+                       <div className="bg-white rounded-xl p-4 border border-slate-100 text-center flex justify-between items-center">
                         <p className="text-slate-500 font-medium text-sm">Precio Prepago</p>
-                        <span className="text-2xl font-bold text-slate-700 block">{formatPrice(phone.precio_lista)}</span>
-                        <p className="text-xs text-slate-400">Equipo liberado</p>
+                        <span className="text-xl font-bold text-slate-700">{formatPrice(phone.precio_lista)}</span>
                       </div>
                     </div>
 
@@ -283,15 +354,52 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     </div>
                   </>
                 ) : (
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-center space-y-2">
-                    <p className="text-slate-900 font-semibold">Precio Contado</p>
-                    <span className="text-4xl font-bold text-slate-900 block">{formatPrice(phone.precio_lista)}</span>
-                    {hasDiscount && (
-                      <p className="text-sm text-slate-500">
-                        Antes: <span className="line-through">{formatPrice(phone.precio_lista)}</span>
-                      </p>
+                  /* No Plan - Direct Purchase Options */
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* 1. Portability Price (Highest Priority) */}
+                    {phone.precio_portabilidad && (
+                      <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-200 text-center space-y-2 relative overflow-hidden shadow-sm">
+                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
+                          <ArrowLeftRight className="w-3 h-3" /> PORTABILIDAD
+                        </div>
+                        <p className="text-sm text-blue-700 font-bold uppercase tracking-wide">Precio Portabilidad</p>
+                        <div className="flex items-center justify-center gap-3">
+                          <p className="text-4xl font-bold text-blue-900">{formatPrice(phone.precio_portabilidad)}</p>
+                        </div>
+                        <p className="text-xs text-blue-600 font-medium">Cámbiate a nuestra compañía y obtén este precio</p>
+                      </div>
                     )}
-                    <p className="text-xs text-slate-500 pt-2">Este equipo no cuenta con planes asociados actualmente.</p>
+
+                    {/* 2. Hites Card Price (Second Priority) */}
+                    {phone.precio_tarjeta_hites && (
+                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-200 text-center space-y-2 relative overflow-hidden shadow-sm">
+                        <div className="absolute top-0 right-0 bg-red-600 text-white text-xs px-3 py-1 rounded-bl-lg font-bold flex items-center gap-1">
+                          <CreditCard className="w-3 h-3" /> TARJETA HITES
+                        </div>
+                        <p className="text-sm text-red-700 font-bold uppercase tracking-wide">Precio Tarjeta Hites</p>
+                        <div className="flex items-center justify-center gap-3">
+                          <p className="text-4xl font-bold text-red-900">{formatPrice(phone.precio_tarjeta_hites)}</p>
+                        </div>
+                        <p className="text-xs text-red-600 font-medium">Pagando con tu tarjeta Hites</p>
+                      </div>
+                    )}
+
+                    {/* 3. Standard Discount / List Price */}
+                    <div className={`rounded-xl p-4 border text-center space-y-1 ${(!phone.precio_portabilidad && !phone.precio_tarjeta_hites) ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100'}`}>
+                      <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">
+                        {hasDiscount ? "Precio Oferta" : "Precio Normal"}
+                      </p>
+                      <div className="flex items-center justify-center gap-3">
+                        {hasDiscount ? (
+                          <>
+                            <p className="text-3xl font-bold text-slate-900">{formatPrice(phone.precio_descuento!)}</p>
+                            <p className="text-lg text-slate-400 line-through decoration-slate-400/50">{formatPrice(phone.precio_lista)}</p>
+                          </>
+                        ) : (
+                          <p className="text-3xl font-bold text-slate-900">{formatPrice(phone.precio_lista)}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -414,26 +522,375 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                 </div>
               </div>
 
-              {/* Box Contents */}
-              {phone.box_contents && phone.box_contents.length > 0 && (
-                <div className="space-y-4 pt-4">
-                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 justify-center">
-                    <Package className="w-6 h-6 text-blue-600" />
-                    Contenido de la Caja
-                  </h2>
-                  <div className="grid grid-cols-2 gap-3">
-                    {phone.box_contents.map((content) => (
-                      <div
-                        key={content.id}
-                        className="flex items-center gap-3 bg-slate-50 rounded-lg p-3 border border-slate-200"
-                      >
-                        <Check className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-slate-700">{content.name}</span>
+              {/* Detailed Specs Button & Drawer */}
+              {phone.especificaciones && (
+                <div className="pt-4 flex justify-center">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800">
+                        Ver más características
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+                      <SheetHeader className="mb-6">
+                        <SheetTitle>Especificaciones Técnicas</SheetTitle>
+                      </SheetHeader>
+                      
+                      <div className="space-y-6">
+                        {/* Software */}
+                        {phone.especificaciones.software && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Cpu className="h-5 w-5 text-primary" />
+                              Software
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.software.tipo_celular && (
+                                <>
+                                  <span className="text-slate-500">Tipo de Celular</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.software.tipo_celular}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.software.condicion && (
+                                <>
+                                  <span className="text-slate-500">Condición</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.software.condicion}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.software.os && (
+                                <>
+                                  <span className="text-slate-500">OS</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.software.os}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.software.version && (
+                                <>
+                                  <span className="text-slate-500">Versión</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.software.version}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pantalla */}
+                        {phone.especificaciones.pantalla && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Smartphone className="h-5 w-5 text-primary" />
+                              Pantalla
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.pantalla.tamano && (
+                                <>
+                                  <span className="text-slate-500">Tamaño</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.pantalla.tamano}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.pantalla.resolucion && (
+                                <>
+                                  <span className="text-slate-500">Resolución</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.pantalla.resolucion}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.pantalla.densidad && (
+                                <>
+                                  <span className="text-slate-500">Densidad</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.pantalla.densidad}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.pantalla.tipo && (
+                                <>
+                                  <span className="text-slate-500">Tipo</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.pantalla.tipo}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.pantalla.tasa_refresco && (
+                                <>
+                                  <span className="text-slate-500">Tasa de Refresco</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.pantalla.tasa_refresco}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cámara */} flex items-center gap-2">
+                              <Camera className="h-5 w-5 text-primary" />
+                              Cámara
+                            
+                        {phone.especificaciones.camara && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2">Cámara</h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.camara.trasera_cantidad && (
+                                <>
+                                  <span className="text-slate-500">Cámaras Traseras</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.camara.trasera_cantidad}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.camara.trasera_descripcion && (
+                                <>
+                                  <span className="text-slate-500">Principal</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.camara.trasera_descripcion}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.camara.frontal_descripcion && (
+                                <>
+                                  <span className="text-slate-500">Frontal / Secundaria</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.camara.frontal_descripcion}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Batería */} flex items-center gap-2">
+                              <Battery className="h-5 w-5 text-primary" />
+                              Batería
+                            
+                        {phone.especificaciones.bateria && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2">Batería</h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.bateria.tipo && (
+                                <>
+                                  <span className="text-slate-500">Tipo</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.bateria.tipo}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.bateria.capacidad && (
+                                <>
+                                  <span className="text-slate-500">Capacidad</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.bateria.capacidad}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.bateria.carga_rapida && (
+                                <>
+                                  <span className="text-slate-500">Carga Rápida</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.bateria.carga_rapida}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Memoria */}
+                        {phone.especificaciones.memoria && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <HardDrive className="h-5 w-5 text-primary" />
+                              Memoria
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.memoria.sim_tipo && (
+                                <>
+                                  <span className="text-slate-500">Tipo de SIM</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.memoria.sim_tipo}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.memoria.dual_sim && (
+                                <>
+                                  <span className="text-slate-500">Dual SIM</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.memoria.dual_sim}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.memoria.esim && (
+                                <>
+                                  <span className="text-slate-500">eSIM</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.memoria.esim}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.memoria.ram && (
+                                <>
+                                  <span className="text-slate-500">RAM</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.memoria.ram}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.memoria.almacenamiento && (
+                                <>
+                                  <span className="text-slate-500">Interna</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.memoria.almacenamiento}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Procesador */}
+                        {phone.especificaciones.procesador && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Cpu className="h-5 w-5 text-primary" />
+                              Procesador
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.procesador.chipset && (
+                                <>
+                                  <span className="text-slate-500">Chipset</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.procesador.chipset}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.procesador.nucleos && (
+                                <>
+                                  <span className="text-slate-500">Núcleos</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.procesador.nucleos}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.procesador.velocidad && (
+                                <>
+                                  <span className="text-slate-500">Velocidad</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.procesador.velocidad}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Dimensiones */} flex items-center gap-2">
+                              <Scale className="h-5 w-5 text-primary" />
+                              Dimensiones
+                            
+                        {phone.especificaciones.dimensiones && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2">Dimensiones</h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.dimensiones.medidas && (
+                                <>
+                                  <span className="text-slate-500">Medidas</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.dimensiones.medidas}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.dimensiones.peso && (
+                                <>
+                                  <span className="text-slate-500">Peso</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.dimensiones.peso}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.dimensiones.indice_sar && (
+                                <>
+                                  <span className="text-slate-500">Índice SAR</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.dimensiones.indice_sar}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Contenido Caja */} flex items-center gap-2">
+                              <Package className="h-5 w-5 text-primary" />
+                              Contenido Caja
+                            
+                        {phone.especificaciones.contenido_caja && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2">Contenido Caja</h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.contenido_caja.cable && (
+                                <>
+                                  <span className="text-slate-500">Cable USB</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.contenido_caja.cable}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.contenido_caja.cargador && (
+                                <>
+                                  <span className="text-slate-500">Cargador</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.contenido_caja.cargador}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.contenido_caja.manual && (
+                                <>
+                                  <span className="text-slate-500">Manual</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.contenido_caja.manual}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.contenido_caja.audifonos && (
+                                <>
+                                  <span className="text-slate-500">Audífonos</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.contenido_caja.audifonos}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.contenido_caja.tarjeta_memoria && (
+                                <>
+                                  <span className="text-slate-500">Tarjeta de Memoria</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.contenido_caja.tarjeta_memoria}</span>
+                                </>
+                              )}
+                            </div>
+                          </div> flex items-center gap-2">
+                              <Wifi className="h-5 w-5 text-primary" />
+                              Sensores
+                            
+                        )}
+
+                        {/* Sensores */}
+                        {phone.especificaciones.sensores && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2">Sensores</h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.sensores.huella && (
+                                <>
+                                  <span className="text-slate-500">Huella</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.sensores.huella}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.sensores.facial && (
+                                <>
+                                  <span className="text-slate-500">Facial</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.sensores.facial}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.sensores.luz && (
+                                <>
+                                  <span className="text-slate-500">Luz</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.sensores.luz}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.sensores.giroscopio && (
+                                <>
+                                  <span className="text-slate-500">Giroscopio</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.sensores.giroscopio}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Protecciones */}
+                        {phone.especificaciones.protecciones && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
+                              <Shield className="h-5 w-5 text-primary" />
+                              Protecciones
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                              {phone.especificaciones.protecciones.agua && (
+                                <>
+                                  <span className="text-slate-500">Agua</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.protecciones.agua}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.protecciones.polvo && (
+                                <>
+                                  <span className="text-slate-500">Polvo</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.protecciones.polvo}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.protecciones.ip_rating && (
+                                <>
+                                  <span className="text-slate-500">Clasificación IP</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.protecciones.ip_rating}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </SheetContent>
+                  </Sheet>
                 </div>
               )}
+
+
 
               {/* Usage Tags Explained - Educational */}
               {phone.tags.length > 0 && (

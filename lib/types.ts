@@ -19,6 +19,9 @@ export interface Telefono {
   precio_lista: number
   precio_plan: number | null
   precio_descuento: number | null
+  porcentaje_descuento?: number | null
+  precio_portabilidad?: number | null
+  precio_tarjeta_hites?: number | null
   ram: string | null
   almacenamiento: string | null
   procesador: string | null
@@ -48,6 +51,75 @@ export interface Telefono {
     precio_mensual_normal: number
     meses_promocion: number
   }[] | null
+  especificaciones?: {
+    software?: {
+      tipo_celular?: string
+      condicion?: string
+      os?: string
+      version?: string
+    }
+    pantalla?: {
+      tamano?: string
+      resolucion?: string
+      densidad?: string
+      tipo?: string
+      tasa_refresco?: string
+      proteccion?: string
+    }
+    camara?: {
+      trasera_cantidad?: string
+      trasera_descripcion?: string
+      frontal_descripcion?: string
+      video?: string
+    }
+    bateria?: {
+      tipo?: string
+      capacidad?: string
+      carga_rapida?: string
+      carga_inalambrica?: string
+    }
+    memoria?: {
+      sim_tipo?: string
+      dual_sim?: string
+      esim?: string
+      ram?: string
+      almacenamiento?: string
+      slot_sd?: string
+    }
+    procesador?: {
+      chipset?: string
+      nucleos?: string
+      velocidad?: string
+    }
+    dimensiones?: {
+      medidas?: string
+      peso?: string
+      indice_sar?: string
+    }
+    contenido_caja?: {
+      cable?: string
+      cargador?: string
+      manual?: string
+      audifonos?: string
+      tarjeta_memoria?: string
+    }
+    sensores?: {
+      huella?: string
+      facial?: string
+      luz?: string
+      giroscopio?: string
+    }
+    protecciones?: {
+      agua?: string
+      polvo?: string
+      ip_rating?: string
+    }
+    conectividad?: {
+      nfc?: boolean
+      red?: string
+      bluetooth?: string
+    }
+  } | null
   created_at: string
   updated_at: string
 }

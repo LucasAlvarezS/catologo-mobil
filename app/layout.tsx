@@ -8,12 +8,12 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "TelefonoShop - Catálogo de Teléfonos",
+  title: "Catalogo Portabilidad - Catálogo de Teléfonos",
   description:
     "Encuentra el teléfono ideal para ti. Catálogo completo con precios, especificaciones y consulta por WhatsApp.",
   generator: "v0.app",
   openGraph: {
-    title: "TelefonoShop - Catálogo de Teléfonos",
+    title: "Catalogo Portabilidad- Catálogo de Teléfonos",
     description: "Encuentra el teléfono ideal para ti. Catálogo completo con precios y especificaciones.",
     type: "website",
   },

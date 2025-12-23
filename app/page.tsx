@@ -6,6 +6,7 @@ import { PhoneGrid } from "@/components/phone-grid"
 import type { TelefonoWithTags, Tag } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
+import { MessageCircle } from "lucide-react"
 
 interface SearchParams {
   q?: string
@@ -133,14 +134,14 @@ export default async function HomePage({
       <Header />
       <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="relative mb-12 py-16 md:py-24 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 shadow-2xl mx-auto max-w-7xl">
+        <div className="relative mb-12 py-20 md:py-32 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 shadow-2xl mx-auto w-full">
           {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
           
           <div className="relative z-10 px-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <div className="space-y-4 max-w-4xl mx-auto">
-              <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
-                Para optar a la portabilidad debes tener al menos <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">4 meses de antigüedad</span> y no poseer deuda en Claro
+              <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
+                Revisa si puedes <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">portar tu número</span>
               </h1>
             </div>
 
@@ -148,24 +149,16 @@ export default async function HomePage({
               <Button 
                 asChild 
                 size="lg" 
-                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold text-lg h-14 px-8 shadow-lg"
-              >
-                <a href="https://sucursalvirtual.clarochile.cl/PagoExpress/index" target="_blank" rel="noopener noreferrer">
-                  Revisa si tienes deudas aquí
-                </a>
-              </Button>
-              
-              <Button 
-                asChild 
-                size="lg" 
-                className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-lg h-14 px-8 shadow-lg border-2 border-transparent"
+                className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-xl h-16 px-10 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-full"
               >
                 <a 
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola Diego, tengo una deuda en Claro, me gustaría solicitar una portabilidad especial")}`}
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola Diego!, Me gustaria saber si puedo portarme a tu compañía.")}`}
                   target="_blank" 
                   rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  Evalúate aquí
+                  <MessageCircle className="w-6 h-6" />
+                  Consultar Portabilidad
                 </a>
               </Button>
             </div>
