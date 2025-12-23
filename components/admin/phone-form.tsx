@@ -842,8 +842,8 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Contenido Caja</h3>
             <div className="grid gap-4 sm:grid-cols-4">
               <div className="grid gap-2">
-                <Label>Cable USB</Label>
-                <Input 
+                <Label>Tipo de cable</Label> 
+                <Input
                   value={formData.especificaciones?.contenido_caja?.cable || ""} 
                   onChange={(e) => handleSpecChange("contenido_caja", "cable", e.target.value)}
                   placeholder="SÍ" 
@@ -948,7 +948,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Clasificación IP</Label>
+                <Label>Certificación</Label>
                 <Input 
                   value={formData.especificaciones?.protecciones?.ip_rating || ""} 
                   onChange={(e) => handleSpecChange("protecciones", "ip_rating", e.target.value)}

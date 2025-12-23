@@ -249,7 +249,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                       {/* Precio con Plan */}
                       <div className="bg-red-50 rounded-xl p-5 border-2 border-red-100 relative overflow-hidden flex justify-between items-center">
                         <div>
-                          <p className="text-red-800 font-semibold text-base mb-1">Precio con Plan</p>
+                          <p className="text-red-800 font-semibold text-base mb-1">Precio con Portabilidad</p>
                           <span className="text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
                         </div>
                         <div className="text-right">
@@ -263,11 +263,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
                       {/* Precio Tarjeta Hites */}
                       {phone.precio_tarjeta_hites && (
-                        <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-100 relative overflow-hidden flex justify-between items-center shadow-sm">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <p className="text-blue-800 font-semibold text-base">Pagando con tarjeta hites</p>
-                              <div className="h-8 w-20 relative">
+                        <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
+                          <div className="w-full sm:w-auto">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
+                              <p className="text-blue-800 font-semibold text-base">Precio con Tarjeta Hites</p>
+                              <div className="h-10 w-28 relative">
                                 <Image 
                                   src="https://pwjfrhjeusllvtfkkadf.supabase.co/storage/v1/object/public/telefonos/assets/tarjetaHites_new.png" 
                                   alt="Hites" 
@@ -278,9 +278,9 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                             </div>
                             <span className="text-4xl font-bold text-blue-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
                           </div>
-                          <div className="text-right">
+                          <div className="w-full sm:w-auto text-left sm:text-right">
                              {phone.precio_lista > phone.precio_tarjeta_hites && (
-                               <div className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium">
+                               <div className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium inline-block">
                                  Ahorras: {formatPrice(phone.precio_lista - phone.precio_tarjeta_hites)}
                                </div>
                              )}
