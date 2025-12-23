@@ -5,13 +5,46 @@ import { Card, CardContent } from "@/components/ui/card"
 import { type TelefonoWithTags, TAG_LABELS } from "@/lib/types"
 import { formatPrice } from "@/lib/utils"
 
+import { CreditCard, ArrowLeftRight } from "lucide-react"
+
 interface PhoneCardProps {
   phone: TelefonoWithTags
 }
 
 export function PhoneCard({ phone }: PhoneCardProps) {
-  const hasDiscount = phone.precio_descuento && phone.precio_descuento < phone.precio_lista
+  const hasDiscount = (phone.precio_descuento && phone.precio_descuento < phone.precio_lista) || (phone.porcentaje_descuento && phone.porcentaje_descuento > 0)
   
+  // Determine primary price to show
+  // Priority: Portability > Hites > Discount > List
+  let primaryPrice = phone.precio_lista
+  let primaryLabel = ""
+  let secondaryPrice = null
+  let secondaryLabel = ""
+
+  if (phone.precio_portabilidad) {
+    primaryPrice = phone.precio_portabilidad
+    primaryLabel = "Portabilidad"
+    if (phone.precio_tarjeta_hites) {
+      secondaryPrice = phone.precio_tarjeta_hites
+      secondaryLabel = "Tarjeta Hites"
+    } else if (hasDiscount) {
+      secondaryPrice = phone.precio_descuento
+      secondaryLabel = "Oferta"
+    }
+  } else if (phone.precio_tarjeta_hites) {
+    primaryPrice = phone.precio_tarjeta_hites
+    primaryLabel = "Tarjeta Hites"
+    if (hasDiscount) {
+      secondaryPrice = phone.precio_descuento
+      secondaryLabel = "Oferta"
+    }
+  } else if (hasDiscount) {
+    primaryPrice = phone.precio_descuento!
+    primaryLabel = "Oferta"
+    secondaryPrice = phone.precio_lista
+    secondaryLabel = "Normal"
+  }
+
   // Plan logic
   const minPlanPrice = phone.planes && phone.planes.length > 0
     ? Math.min(...phone.planes.map(p => Number(p.precio_mensual)))
@@ -33,6 +66,16 @@ export function PhoneCard({ phone }: PhoneCardProps) {
           {hasPlan && (
             <Badge className="absolute top-2 right-2 bg-emerald-500 text-white shadow-sm">
               {multiplePlans ? "Planes Disponibles" : "Con Plan"}
+            </Badge>
+          )}
+          {phone.precio_portabilidad && (
+            <Badge className="absolute top-2 left-2 bg-blue-600 text-white shadow-sm flex items-center gap-1">
+              <ArrowLeftRight className="w-3 h-3" /> Portabilidad
+            </Badge>
+          )}
+          {!phone.precio_portabilidad && phone.precio_tarjeta_hites && (
+            <Badge className="absolute top-2 left-2 bg-red-600 text-white shadow-sm flex items-center gap-1">
+              <CreditCard className="w-3 h-3" /> Hites
             </Badge>
           )}
         </div>
@@ -58,14 +101,21 @@ export function PhoneCard({ phone }: PhoneCardProps) {
                 </>
               ) : (
                 <>
-                  {hasDiscount ? (
-                    <div className="flex flex-col items-center">
-                      <span className="text-xl font-bold text-red-600">{formatPrice(phone.precio_descuento!)}</span>
-                      <span className="text-xs text-muted-foreground line-through">{formatPrice(phone.precio_lista)}</span>
-                    </div>
-                  ) : (
-                    <span className="text-xl font-bold text-slate-900">{formatPrice(phone.precio_lista)}</span>
-                  )}
+                  <div className="flex flex-col items-center">
+                    <span className={`text-xl font-bold ${primaryLabel === 'Tarjeta Hites' ? 'text-red-600' : primaryLabel === 'Portabilidad' ? 'text-blue-600' : 'text-slate-900'}`}>
+                      {formatPrice(primaryPrice)}
+                    </span>
+                    {primaryLabel && (
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">
+                        {primaryLabel}
+                      </span>
+                    )}
+                    {secondaryPrice && (
+                      <span className="text-xs text-muted-foreground line-through mt-1">
+                        {formatPrice(secondaryPrice)}
+                      </span>
+                    )}
+                  </div>
                 </>
               )}
             </div>
