@@ -57,6 +57,7 @@ export interface Telefono {
       condicion?: string
       os?: string
       version?: string
+      extras?: { label: string; value: string }[]
     }
     pantalla?: {
       tamano?: string
@@ -65,18 +66,21 @@ export interface Telefono {
       tipo?: string
       tasa_refresco?: string
       proteccion?: string
+      extras?: { label: string; value: string }[]
     }
     camara?: {
       trasera_cantidad?: string
       trasera_descripcion?: string
       frontal_descripcion?: string
       video?: string
+      extras?: { label: string; value: string }[]
     }
     bateria?: {
       tipo?: string
       capacidad?: string
       carga_rapida?: string
       carga_inalambrica?: string
+      extras?: { label: string; value: string }[]
     }
     memoria?: {
       sim_tipo?: string
@@ -85,16 +89,19 @@ export interface Telefono {
       ram?: string
       almacenamiento?: string
       slot_sd?: string
+      extras?: { label: string; value: string }[]
     }
     procesador?: {
       chipset?: string
       nucleos?: string
       velocidad?: string
+      extras?: { label: string; value: string }[]
     }
     dimensiones?: {
       medidas?: string
       peso?: string
       indice_sar?: string
+      extras?: { label: string; value: string }[]
     }
     contenido_caja?: {
       cable?: string
@@ -102,22 +109,27 @@ export interface Telefono {
       manual?: string
       audifonos?: string
       tarjeta_memoria?: string
+      extras?: { label: string; value: string }[]
     }
     sensores?: {
       huella?: string
       facial?: string
       luz?: string
       giroscopio?: string
+      extras?: { label: string; value: string }[]
     }
     protecciones?: {
       agua?: string
       polvo?: string
       ip_rating?: string
+      extras?: { label: string; value: string }[]
     }
     conectividad?: {
-      nfc?: boolean
+      nfc?: boolean | string
       red?: string
       bluetooth?: string
+      usb?: string
+      extras?: { label: string; value: string }[]
     }
   } | null
   created_at: string

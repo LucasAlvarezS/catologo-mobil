@@ -146,7 +146,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
                 {hasDiscount && (
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-bold shadow-lg z-10">
-                    -{phone.porcentaje_descuento ? phone.porcentaje_descuento : Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}% OFF
+                    -{phone.porcentaje_descuento ? phone.porcentaje_descuento : Math.round((1 - phone.precio_descuento! / phone.precio_lista) * 100)}% DSCTO
                   </div>
                 )}
                 <div className="absolute bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg flex items-center z-10">
@@ -247,14 +247,14 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     {/* Device Price Display */}
                     <div className="space-y-3">
                       {/* Precio con Plan */}
-                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-100 relative overflow-hidden flex justify-between items-center">
-                        <div>
+                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="w-full sm:w-auto">
                           <p className="text-red-800 font-semibold text-base mb-1">Precio con Portabilidad</p>
                           <span className="text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
                         </div>
-                        <div className="text-right">
+                        <div className="w-full sm:w-auto text-left sm:text-right">
                            {phone.precio_lista > basePrice && (
-                             <div className="bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold">
+                             <div className="bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold inline-block">
                                Ahorras: {formatPrice(phone.precio_lista - basePrice)}
                              </div>
                            )}
@@ -314,9 +314,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                             <Badge className="bg-red-500 hover:bg-red-600 mb-2">{planDiscount}% DESCUENTO</Badge>
                             <div className="flex flex-col items-end">
                               <span className="text-2xl font-bold text-slate-900">{formatPrice(planPrice)}</span>
-                              <span className="text-xs text-slate-500 font-medium">Mensual por {planMonthsPromo} meses</span>
+                              {planMonthsPromo > 0 && (
+                                <span className="text-xs text-slate-500 font-medium">Mensual por {planMonthsPromo} meses</span>
+                              )}
                             </div>
-                            <p className="text-xs text-slate-400 mt-1">Luego desde el mes {planMonthsPromo + 1} {formatPrice(planPriceNormal)}</p>
+                            {planMonthsPromo > 0 && (
+                              <p className="text-xs text-slate-400 mt-1">Luego desde el mes {planMonthsPromo + 1} {formatPrice(planPriceNormal)}</p>
+                            )}
                           </div>
                         </div>
 
@@ -578,6 +582,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.software.version}</span>
                                 </>
                               )}
+                              {phone.especificaciones.software.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -620,6 +630,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.pantalla.tasa_refresco}</span>
                                 </>
                               )}
+                              {phone.especificaciones.pantalla.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -650,6 +666,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.camara.frontal_descripcion}</span>
                                 </>
                               )}
+                              {phone.especificaciones.camara.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -680,6 +702,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.bateria.carga_rapida}</span>
                                 </>
                               )}
+                              {phone.especificaciones.bateria.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -722,6 +750,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.memoria.almacenamiento}</span>
                                 </>
                               )}
+                              {phone.especificaciones.memoria.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -752,6 +786,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.procesador.velocidad}</span>
                                 </>
                               )}
+                              {phone.especificaciones.procesador.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -782,6 +822,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.dimensiones.indice_sar}</span>
                                 </>
                               )}
+                              {phone.especificaciones.dimensiones.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -796,7 +842,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                             <div className="grid grid-cols-2 gap-y-4 text-base">
                               {phone.especificaciones.contenido_caja.cable && (
                                 <>
-                                  <span className="text-slate-500">Cable USB</span>
+                                  <span className="text-slate-500">Cable</span>
                                   <span className="font-medium text-right">{phone.especificaciones.contenido_caja.cable}</span>
                                 </>
                               )}
@@ -824,6 +870,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.contenido_caja.tarjeta_memoria}</span>
                                 </>
                               )}
+                              {phone.especificaciones.contenido_caja.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -860,6 +912,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.sensores.giroscopio}</span>
                                 </>
                               )}
+                              {phone.especificaciones.sensores.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -890,6 +948,58 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                   <span className="font-medium text-right">{phone.especificaciones.protecciones.ip_rating}</span>
                                 </>
                               )}
+                              {phone.especificaciones.protecciones.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Conectividad */}
+                        {phone.especificaciones.conectividad && (
+                          <div className="space-y-3">
+                            <h3 className="font-bold text-xl border-b pb-2 flex items-center gap-2">
+                              <Wifi className="h-5 w-5 text-primary" />
+                              Conectividad
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-4 text-base">
+                              {phone.especificaciones.conectividad.nfc !== undefined && (
+                                <>
+                                  <span className="text-slate-500">NFC</span>
+                                  <span className="font-medium text-right">
+                                    {typeof phone.especificaciones.conectividad.nfc === 'boolean' 
+                                      ? (phone.especificaciones.conectividad.nfc ? "SÍ" : "NO")
+                                      : phone.especificaciones.conectividad.nfc}
+                                  </span>
+                                </>
+                              )}
+                              {phone.especificaciones.conectividad.red && (
+                                <>
+                                  <span className="text-slate-500">Red</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.conectividad.red}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.conectividad.bluetooth && (
+                                <>
+                                  <span className="text-slate-500">Bluetooth</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.conectividad.bluetooth}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.conectividad.usb && (
+                                <>
+                                  <span className="text-slate-500">USB</span>
+                                  <span className="font-medium text-right">{phone.especificaciones.conectividad.usb}</span>
+                                </>
+                              )}
+                              {phone.especificaciones.conectividad.extras?.map((extra, i) => (
+                                <React.Fragment key={i}>
+                                  <span className="text-slate-500">{extra.label}</span>
+                                  <span className="font-medium text-right">{extra.value}</span>
+                                </React.Fragment>
+                              ))}
                             </div>
                           </div>
                         )}

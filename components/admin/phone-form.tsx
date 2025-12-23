@@ -238,6 +238,149 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
     }
   }
 
+  const handleAddExtra = (category: string, label: string, value: string) => {
+    if (!label || !value) return
+    setFormData((prev) => {
+      // @ts-ignore
+      const currentCategory = prev.especificaciones?.[category] || {}
+      const currentExtras = currentCategory.extras || []
+      
+      return {
+        ...prev,
+        especificaciones: {
+          ...prev.especificaciones,
+          [category]: {
+            ...currentCategory,
+            extras: [...currentExtras, { label, value }]
+          }
+        }
+      }
+    })
+  }
+
+  const handleRemoveExtra = (category: string, index: number) => {
+    setFormData((prev) => {
+      // @ts-ignore
+      const currentCategory = prev.especificaciones?.[category] || {}
+      const currentExtras = currentCategory.extras || []
+      
+      return {
+        ...prev,
+        especificaciones: {
+          ...prev.especificaciones,
+          [category]: {
+            ...currentCategory,
+            extras: currentExtras.filter((_: any, i: number) => i !== index)
+          }
+        }
+      }
+    })
+  }
+
+  const CustomSpecsManager = ({ category }: { category: string }) => {
+    const [label, setLabel] = useState("")
+    const [value, setValue] = useState("")
+    // @ts-ignore
+    const extras = formData.especificaciones?.[category]?.extras || []
+
+    return (
+      <div className="col-span-full mt-4 border-t pt-4">
+        <h4 className="text-sm font-semibold mb-3">Detalles Adicionales</h4>
+        
+        {/* List of extras */}
+        {extras.length > 0 && (
+          <div className="grid gap-2 mb-4">
+            {extras.map((extra: any, idx: number) => (
+              <div key={idx} className="flex items-center justify-between bg-slate-50 p-2 rounded border">
+                <span className="text-sm"><span className="font-medium">{extra.label}:</span> {extra.value}</span>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 w-6 p-0 text-red-500"
+                  onClick={() => handleRemoveExtra(category, idx)}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add form */}
+        <div className="flex gap-2 items-end">
+          <div className="grid gap-1 flex-1">
+            <Label className="text-xs">Nombre (Ej: Carga Inversa)</Label>
+            <Input 
+              value={label} 
+              onChange={(e) => setLabel(e.target.value)} 
+              placeholder="Nombre del detalle"
+              className="h-8 text-sm"
+            />
+          </div>
+          <div className="grid gap-1 flex-1">
+            <Label className="text-xs">Valor (Ej: 10W)</Label>
+            <Input 
+              value={value} 
+              onChange={(e) => setValue(e.target.value)} 
+              placeholder="Valor"
+              className="h-8 text-sm"
+            />
+          </div>
+          <Button 
+            type="button" 
+            size="sm"
+            className="h-8"
+            onClick={() => {
+              handleAddExtra(category, label, value)
+              setLabel("")
+              setValue("")
+            }}
+            disabled={!label || !value}
+          >
+            <Plus className="w-3 h-3 mr-1" /> Añadir
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const SpecSwitch = ({ 
+    category, 
+    field, 
+    label, 
+    placeholder = "SÍ" 
+  }: { 
+    category: string, 
+    field: string, 
+    label: string, 
+    placeholder?: string 
+  }) => {
+    // @ts-ignore
+    const currentValue = formData.especificaciones?.[category]?.[field]
+    const isChecked = currentValue && currentValue.toUpperCase() !== "NO" && currentValue !== ""
+
+    return (
+      <div className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <Label>{label}</Label>
+          <Switch
+            checked={isChecked}
+            onCheckedChange={(checked) => {
+              handleSpecChange(category, field, checked ? placeholder : "NO")
+            }}
+          />
+        </div>
+        <Input 
+          value={currentValue || ""} 
+          onChange={(e) => handleSpecChange(category, field, e.target.value)}
+          placeholder={placeholder}
+          className={!isChecked ? "opacity-50" : ""}
+        />
+      </div>
+    )
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -619,6 +762,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="software" />
           </div>
 
           <div className="border-t" />
@@ -626,7 +770,15 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
           {/* Pantalla */}
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Pantalla</h3>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div className="grid gap-2">
+                <Label>Tipo de Pantalla</Label>
+                <Input 
+                  value={formData.especificaciones?.pantalla?.tipo || ""} 
+                  onChange={(e) => handleSpecChange("pantalla", "tipo", e.target.value)}
+                  placeholder="OLED / IPS / VA" 
+                />
+              </div>
               <div className="grid gap-2">
                 <Label>Tamaño</Label>
                 <Input 
@@ -652,6 +804,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="pantalla" />
           </div>
 
           <div className="border-t" />
@@ -685,6 +838,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="camara" />
           </div>
 
           <div className="border-t" />
@@ -718,6 +872,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="bateria" />
           </div>
 
           <div className="border-t" />
@@ -742,14 +897,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                   placeholder="Sí, (1 Nano + 1 eSIM)" 
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>eSIM</Label>
-                <Input 
-                  value={formData.especificaciones?.memoria?.esim || ""} 
-                  onChange={(e) => handleSpecChange("memoria", "esim", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
+              <SpecSwitch category="memoria" field="esim" label="eSIM" />
               <div className="grid gap-2">
                 <Label>RAM</Label>
                 <Input 
@@ -767,6 +915,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="memoria" />
           </div>
 
           <div className="border-t" />
@@ -800,6 +949,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="procesador" />
           </div>
 
           <div className="border-t" />
@@ -833,6 +983,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="dimensiones" />
           </div>
 
           <div className="border-t" />
@@ -857,14 +1008,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                   placeholder="NO" 
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>Manual</Label>
-                <Input 
-                  value={formData.especificaciones?.contenido_caja?.manual || ""} 
-                  onChange={(e) => handleSpecChange("contenido_caja", "manual", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
+              <SpecSwitch category="contenido_caja" field="manual" label="Manual" />
               <div className="grid gap-2">
                 <Label>Audífonos</Label>
                 <Input 
@@ -873,15 +1017,9 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                   placeholder="NO" 
                 />
               </div>
-              <div className="grid gap-2">
-                <Label>Tarjeta de Memoria</Label>
-                <Input 
-                  value={formData.especificaciones?.contenido_caja?.tarjeta_memoria || ""} 
-                  onChange={(e) => handleSpecChange("contenido_caja", "tarjeta_memoria", e.target.value)}
-                  placeholder="NO" 
-                />
-              </div>
+              <SpecSwitch category="contenido_caja" field="tarjeta_memoria" label="Tarjeta de Memoria" placeholder="NO" />
             </div>
+            <CustomSpecsManager category="contenido_caja" />
           </div>
 
           <div className="border-t" />
@@ -890,39 +1028,12 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Sensores</h3>
             <div className="grid gap-4 sm:grid-cols-4">
-              <div className="grid gap-2">
-                <Label>Huella</Label>
-                <Input 
-                  value={formData.especificaciones?.sensores?.huella || ""} 
-                  onChange={(e) => handleSpecChange("sensores", "huella", e.target.value)}
-                  placeholder="NO" 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Facial</Label>
-                <Input 
-                  value={formData.especificaciones?.sensores?.facial || ""} 
-                  onChange={(e) => handleSpecChange("sensores", "facial", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Luz</Label>
-                <Input 
-                  value={formData.especificaciones?.sensores?.luz || ""} 
-                  onChange={(e) => handleSpecChange("sensores", "luz", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Giroscopio</Label>
-                <Input 
-                  value={formData.especificaciones?.sensores?.giroscopio || ""} 
-                  onChange={(e) => handleSpecChange("sensores", "giroscopio", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
+              <SpecSwitch category="sensores" field="huella" label="Huella" placeholder="SÍ" />
+              <SpecSwitch category="sensores" field="facial" label="Facial" placeholder="SÍ" />
+              <SpecSwitch category="sensores" field="luz" label="Luz" placeholder="SÍ" />
+              <SpecSwitch category="sensores" field="giroscopio" label="Giroscopio" placeholder="SÍ" />
             </div>
+            <CustomSpecsManager category="sensores" />
           </div>
 
           <div className="border-t" />
@@ -931,22 +1042,8 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Protecciones</h3>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="grid gap-2">
-                <Label>Agua</Label>
-                <Input 
-                  value={formData.especificaciones?.protecciones?.agua || ""} 
-                  onChange={(e) => handleSpecChange("protecciones", "agua", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Polvo</Label>
-                <Input 
-                  value={formData.especificaciones?.protecciones?.polvo || ""} 
-                  onChange={(e) => handleSpecChange("protecciones", "polvo", e.target.value)}
-                  placeholder="SÍ" 
-                />
-              </div>
+              <SpecSwitch category="protecciones" field="agua" label="Agua" placeholder="SÍ" />
+              <SpecSwitch category="protecciones" field="polvo" label="Polvo" placeholder="SÍ" />
               <div className="grid gap-2">
                 <Label>Certificación</Label>
                 <Input 
@@ -956,6 +1053,42 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                 />
               </div>
             </div>
+            <CustomSpecsManager category="protecciones" />
+          </div>
+
+          <div className="border-t" />
+
+          {/* Conectividad */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Conectividad</h3>
+            <div className="grid gap-4 sm:grid-cols-4">
+              <SpecSwitch category="conectividad" field="nfc" label="NFC" placeholder="SÍ" />
+              <div className="grid gap-2">
+                <Label>Red</Label>
+                <Input 
+                  value={formData.especificaciones?.conectividad?.red || ""} 
+                  onChange={(e) => handleSpecChange("conectividad", "red", e.target.value)}
+                  placeholder="5G" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Bluetooth</Label>
+                <Input 
+                  value={formData.especificaciones?.conectividad?.bluetooth || ""} 
+                  onChange={(e) => handleSpecChange("conectividad", "bluetooth", e.target.value)}
+                  placeholder="5.3" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>USB</Label>
+                <Input 
+                  value={formData.especificaciones?.conectividad?.usb || ""} 
+                  onChange={(e) => handleSpecChange("conectividad", "usb", e.target.value)}
+                  placeholder="USB-C 2.0" 
+                />
+              </div>
+            </div>
+            <CustomSpecsManager category="conectividad" />
           </div>
         </CardContent>
       </Card>
@@ -1130,14 +1263,24 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="new_plan_meses">Meses Promoción</Label>
-                  <Input
-                    id="new_plan_meses"
-                    type="number"
-                    value={newPlan.meses_promocion}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, meses_promocion: e.target.value }))}
-                    placeholder="6"
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="new_plan_meses">¿Tiene Meses Promoción?</Label>
+                    <Switch
+                      checked={!!newPlan.meses_promocion && Number(newPlan.meses_promocion) > 0}
+                      onCheckedChange={(checked) => {
+                         setNewPlan(prev => ({ ...prev, meses_promocion: checked ? "6" : "" }))
+                      }}
+                    />
+                  </div>
+                  {!!newPlan.meses_promocion && Number(newPlan.meses_promocion) > 0 && (
+                    <Input
+                      id="new_plan_meses"
+                      type="number"
+                      value={newPlan.meses_promocion}
+                      onChange={(e) => setNewPlan((prev) => ({ ...prev, meses_promocion: e.target.value }))}
+                      placeholder="Ej: 6"
+                    />
+                  )}
                 </div>
               </div>
               <Button
