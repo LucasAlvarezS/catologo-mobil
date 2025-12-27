@@ -39,7 +39,7 @@ export function Header() {
       <div className="container flex h-20 items-center justify-center relative px-4 mx-auto">
         {/* Logo Centrado */}
         <Link href="/" className="relative z-10 flex items-center justify-center w-full">
-          <h1 className="font-black text-3xl md:text-5xl tracking-tighter text-center uppercase bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent">
+          <h1 className="font-black text-2xl sm:text-3xl md:text-5xl tracking-tighter text-center uppercase bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent px-2 leading-tight">
             Catálogo Portabilidad
           </h1>
         </Link>

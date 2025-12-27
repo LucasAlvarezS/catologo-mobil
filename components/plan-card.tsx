@@ -9,6 +9,7 @@ interface PlanCardProps {
     precio_mensual_normal: number
     meses_promocion: number
     redes_sociales?: string[]
+    linea_adicional?: boolean
   }
   isSelected?: boolean
   onClick?: () => void
@@ -88,6 +89,21 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
         <p className="text-center text-xs opacity-80 px-2">
           Navegación de alta velocidad en la red más rápida
         </p>
+
+        {/* Additional Line Info */}
+        {plan.linea_adicional && (
+          <div className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-center backdrop-blur-sm mt-2">
+             <div className="flex items-center justify-center gap-1 mb-1">
+               <Phone className="w-3 h-3 text-white fill-current" />
+               <p className="text-xs font-bold text-white uppercase tracking-wider">
+                 + Línea Adicional
+               </p>
+             </div>
+             <p className="text-[10px] text-blue-100 leading-tight">
+               Porta líneas extra por $4.900
+             </p>
+          </div>
+        )}
 
         {/* Price */}
         <div className="mt-auto pt-4 text-center w-full">

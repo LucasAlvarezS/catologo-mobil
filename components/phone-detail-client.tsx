@@ -152,12 +152,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
               {/* Thumbnail gallery */}
               {images.length > 1 && (
-                <div className="flex gap-3 justify-center">
+                <div className="flex gap-3 justify-center overflow-x-auto pb-2 px-2 snap-x">
                   {images.map((url, i) => (
                     <div
                       key={i}
                       onClick={() => setSelectedImage(url)}
-                      className={`relative w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 transition-colors cursor-pointer shadow-sm hover:shadow-md ${
+                      className={`relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 snap-center rounded-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 border-2 transition-colors cursor-pointer shadow-sm hover:shadow-md ${
                         selectedImage === url ? "border-blue-600 ring-2 ring-blue-100" : "border-slate-200 hover:border-blue-400"
                       }`}
                     >
@@ -174,13 +174,13 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
             </div>
 
             {/* Info Section - Premium Sales Focused */}
-            <div className="space-y-8 py-2">
+            <div className="space-y-6 sm:space-y-8 py-2">
               {/* Title & Brand */}
               <div className="space-y-2 text-center">
                 <p className="text-sm text-blue-600 font-bold uppercase tracking-widest">{phone.marca}</p>
-                <h1 className="text-4xl lg:text-5xl font-bold text-slate-900">{phone.modelo}</h1>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">{phone.modelo}</h1>
                 {phone.descripcion_corta && (
-                  <p className="text-lg lg:text-xl text-slate-600 leading-relaxed">{phone.descripcion_corta}</p>
+                  <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed">{phone.descripcion_corta}</p>
                 )}
               </div>
 
@@ -223,14 +223,14 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     {/* Device Price Display */}
                     <div className="space-y-3">
                       {/* Precio con Plan */}
-                      <div className="bg-red-50 rounded-xl p-5 border-2 border-red-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="bg-red-50 rounded-xl p-4 sm:p-5 border-2 border-red-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="w-full sm:w-auto">
                           <p className="text-red-800 font-semibold text-base mb-1">Precio con Portabilidad</p>
-                          <span className="text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
+                          <span className="text-3xl sm:text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
                         </div>
                         <div className="w-full sm:w-auto text-left sm:text-right">
                            {phone.precio_lista > basePrice && (
-                             <div className="bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-sm font-bold inline-block">
+                             <div className="bg-red-100 text-red-700 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold inline-block">
                                Ahorras: {formatPrice(phone.precio_lista - basePrice)}
                              </div>
                            )}
@@ -239,11 +239,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
                       {/* Precio Tarjeta Hites */}
                       {phone.precio_tarjeta_hites && (
-                        <div className="bg-blue-50 rounded-xl p-5 border-2 border-blue-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
+                        <div className="bg-blue-50 rounded-xl p-4 sm:p-5 border-2 border-blue-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
                           <div className="w-full sm:w-auto">
                             <div className="flex flex-wrap items-center gap-3 mb-2">
                               <p className="text-blue-800 font-semibold text-base">Precio con Tarjeta Hites</p>
-                              <div className="h-10 w-28 relative">
+                              <div className="h-8 w-24 sm:h-10 sm:w-28 relative">
                                 <Image 
                                   src="https://pwjfrhjeusllvtfkkadf.supabase.co/storage/v1/object/public/telefonos/assets/tarjetaHites_new.png" 
                                   alt="Hites" 
@@ -252,11 +252,11 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                                 />
                               </div>
                             </div>
-                            <span className="text-4xl font-bold text-blue-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
+                            <span className="text-3xl sm:text-4xl font-bold text-blue-900 block">{formatPrice(phone.precio_tarjeta_hites)}</span>
                           </div>
                           <div className="w-full sm:w-auto text-left sm:text-right">
                              {phone.precio_lista > phone.precio_tarjeta_hites && (
-                               <div className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium inline-block">
+                               <div className="bg-blue-100 text-blue-700 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium inline-block">
                                  Ahorras: {formatPrice(phone.precio_lista - phone.precio_tarjeta_hites)}
                                </div>
                              )}
@@ -274,9 +274,9 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     {/* Plan Selection Carousel */}
                     <div className="space-y-4">
                       <h3 className="font-semibold text-slate-900">ELIGE TU PLAN</h3>
-                      <div className="flex overflow-x-auto py-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+                      <div className="flex overflow-x-auto py-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide pb-8">
                         {availablePlans.map((plan, idx) => (
-                          <div key={idx} className="snap-center shrink-0">
+                          <div key={idx} className="snap-center shrink-0 w-[260px] sm:w-[280px]">
                             <PlanCard 
                               plan={plan} 
                               isSelected={selectedPlanIndex === idx}
@@ -286,21 +286,6 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                         ))}
                       </div>
                     </div>
-
-                    {/* Additional Line Info */}
-                    {currentPlan.linea_adicional && (
-                      <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-                        <div className="p-2 bg-blue-100 rounded-full text-blue-600">
-                          <Phone className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-blue-900 text-sm">portando linea adicional</h4>
-                          <p className="text-blue-700 text-sm mt-1">
-                            Porta lineas adicionales por $4.900 por 6 meses
-                          </p>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Roaming Info */}
                     <div className="relative mt-6 bg-slate-900 rounded-2xl p-6 text-white shadow-lg overflow-hidden">
