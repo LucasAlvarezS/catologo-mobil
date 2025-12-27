@@ -17,7 +17,7 @@ export function formatPrice(price: number): string {
 }
 
 export function generateWhatsAppLink(modelo: string, marca: string): string {
-  const phoneNumber = "5215512345678" // Replace with actual store phone number
+  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "56940040432"
   const message = encodeURIComponent(`Hola, vi el modelo ${marca} ${modelo} en tu catálogo y quisiera más información.`)
   return `https://wa.me/${phoneNumber}?text=${message}`
 }

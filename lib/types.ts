@@ -50,6 +50,8 @@ export interface Telefono {
     precio_mensual: number
     precio_mensual_normal: number
     meses_promocion: number
+    redes_sociales?: string[]
+    linea_adicional?: boolean
   }[] | null
   especificaciones?: {
     software?: {

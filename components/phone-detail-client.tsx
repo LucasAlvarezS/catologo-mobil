@@ -14,6 +14,7 @@ import { PhoneSelectorModal } from "@/components/phone-selector-modal"
 import { PhoneComparison } from "@/components/phone-comparison"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { PlanCard } from "@/components/plan-card"
 
 interface PhoneDetailClientProps {
   phone: TelefonoWithTags
@@ -55,7 +56,9 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
     gigas: phone.info_gigas_plan || "300GB",
     precio_mensual: phone.precio_mensual_plan || 7990,
     precio_mensual_normal: phone.precio_mensual_plan_normal || 14990,
-    meses_promocion: phone.meses_plan_promocional || 6
+    meses_promocion: phone.meses_plan_promocional || 6,
+    redes_sociales: ["Facebook", "Instagram", "WhatsApp", "Messenger", "Telegram"],
+    linea_adicional: false
   }
 
   const availablePlans = phone.planes && phone.planes.length > 0 
@@ -64,13 +67,6 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
 
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0)
   const currentPlan = availablePlans[selectedPlanIndex] || legacyPlan
-
-  const planName = currentPlan.nombre
-  const planGigas = currentPlan.gigas
-  const planPrice = Number(currentPlan.precio_mensual)
-  const planPriceNormal = Number(currentPlan.precio_mensual_normal)
-  const planMonthsPromo = Number(currentPlan.meses_promocion)
-  const planDiscount = planPriceNormal > 0 ? Math.round((1 - planPrice / planPriceNormal) * 100) : 0
 
   const specs = [
     { icon: <MemoryStick className="w-5 h-5" />, label: "RAM", value: phone.ram },
@@ -222,27 +218,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                 {/* Financing Selector - Only if plan is available */}
                 {phone.incluye_plan ? (
                   <>
-                    {/* Plan Selector */}
-                    {availablePlans.length > 1 && (
-                      <div className="space-y-3">
-                        <h3 className="font-semibold text-slate-900">ELIGE TU PLAN</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {availablePlans.map((plan, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setSelectedPlanIndex(idx)}
-                              className={`py-2 px-3 rounded-lg text-sm font-medium transition-all border ${
-                                selectedPlanIndex === idx
-                                  ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                                  : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
-                              }`}
-                            >
-                              {plan.nombre}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Plan Selector moved below */}
 
                     {/* Device Price Display */}
                     <div className="space-y-3">
@@ -295,58 +271,50 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                       </div>
                     </div>
 
-                    {/* Dynamic Content Card */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    {/* Plan Selection Carousel */}
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-slate-900">ELIGE TU PLAN</h3>
+                      <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+                        {availablePlans.map((plan, idx) => (
+                          <div key={idx} className="snap-center shrink-0">
+                            <PlanCard 
+                              plan={plan} 
+                              isSelected={selectedPlanIndex === idx}
+                              onClick={() => setSelectedPlanIndex(idx)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                      {/* Plan Details */}
-                      <div className="p-6 space-y-6">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Plan Asociado</p>
-                            <h4 className="text-xl font-bold text-slate-900">{planName}</h4>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
-                                {planGigas} a alta velocidad
-                              </Badge>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <Badge className="bg-red-500 hover:bg-red-600 mb-2">{planDiscount}% DESCUENTO</Badge>
-                            <div className="flex flex-col items-end">
-                              <span className="text-2xl font-bold text-slate-900">{formatPrice(planPrice)}</span>
-                              {planMonthsPromo > 0 && (
-                                <span className="text-xs text-slate-500 font-medium">Mensual por {planMonthsPromo} meses</span>
-                              )}
-                            </div>
-                            {planMonthsPromo > 0 && (
-                              <p className="text-xs text-slate-400 mt-1">Luego desde el mes {planMonthsPromo + 1} {formatPrice(planPriceNormal)}</p>
-                            )}
-                          </div>
+                    {/* Additional Line Info */}
+                    {currentPlan.linea_adicional && (
+                      <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+                        <div className="p-2 bg-blue-100 rounded-full text-blue-600">
+                          <Phone className="w-5 h-5" />
                         </div>
+                        <div>
+                          <h4 className="font-bold text-blue-900 text-sm">portando linea adicional</h4>
+                          <p className="text-blue-700 text-sm mt-1">
+                            Porta lineas adicionales por $4.900 por 6 meses
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
-                        <div className="space-y-3">
-                          <p className="text-sm font-medium text-slate-700">Este plan incluye:</p>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <Phone className="w-4 h-4 text-green-500" />
-                              <span>Minutos Libres</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <Globe className="w-4 h-4 text-blue-500" />
-                              <span>Roaming 2GB</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <Wifi className="w-4 h-4 text-indigo-500" />
-                              <span>Redes Sociales Libres</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                              <div className="flex -space-x-1">
-                                <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] border border-white">f</div>
-                                <div className="w-5 h-5 rounded-full bg-pink-600 flex items-center justify-center text-white text-[10px] border border-white">ig</div>
-                                <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center text-white text-[10px] border border-white">x</div>
-                              </div>
-                            </div>
-                          </div>
+                    {/* Roaming Info */}
+                    <div className="relative mt-6 bg-orange-500 rounded-2xl p-6 text-white shadow-lg overflow-hidden">
+                      <div className="absolute top-0 left-6 bg-white text-orange-600 px-4 py-1 rounded-b-lg font-bold text-sm tracking-wider shadow-sm">
+                        ROAMING
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        <p className="text-sm font-medium leading-relaxed">
+                          Navegación, SMS y llamadas de larga distancia internacional incluidos en nuestros planes. 51 países en los 5 continentes.
+                        </p>
+                        <div className="bg-white/20 rounded-lg p-3">
+                          <p className="text-xs font-semibold">
+                            <span className="font-bold text-white">Argentina y Brasil:</span> no considera cobro de roaming, trafica de la misma forma que en el territorio nacional.
+                          </p>
                         </div>
                       </div>
                     </div>

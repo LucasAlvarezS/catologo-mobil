@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PhoneTable } from "@/components/admin/phone-table"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Plus, Smartphone, Tag, Eye } from "lucide-react"
+import { Plus, Smartphone, Tag, Eye, CreditCard } from "lucide-react"
 import type { Telefono } from "@/lib/types"
 
 async function getStats() {
@@ -65,6 +65,14 @@ export default async function AdminDashboard() {
         </div>
         <div className="flex gap-2">
           <TagDialog />
+          
+          {/* NUEVO BOTÓN PARA GESTIONAR PLANES */}
+          <Link href="/admin/planes">
+            <Button variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+              <CreditCard className="mr-2 h-4 w-4" /> Gestionar Planes
+            </Button>
+          </Link>
+
           <Button asChild>
             <Link href="/admin/telefonos/nuevo">
               <Plus className="w-4 h-4 mr-2" />

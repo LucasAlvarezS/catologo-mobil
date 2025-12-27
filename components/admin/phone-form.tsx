@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -55,18 +55,12 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
     tiene_almacenamiento_expandible: phone?.tiene_almacenamiento_expandible ?? false,
     colores: phone?.colores || [],
     incluye_plan: phone?.incluye_plan ?? false,
-    nombre_plan: phone?.nombre_plan || "Plan MAX L LIBRE",
-    info_gigas_plan: phone?.info_gigas_plan || "300GB",
-    precio_mensual_plan: phone?.precio_mensual_plan?.toString() || "7990",
-    precio_mensual_plan_normal: phone?.precio_mensual_plan_normal?.toString() || "14990",
-    meses_plan_promocional: phone?.meses_plan_promocional?.toString() || "6",
-    planes: phone?.planes || (phone?.nombre_plan ? [{
-      nombre: phone.nombre_plan,
-      gigas: phone.info_gigas_plan || "",
-      precio_mensual: phone.precio_mensual_plan || 0,
-      precio_mensual_normal: phone.precio_mensual_plan_normal || 0,
-      meses_promocion: phone.meses_plan_promocional || 0
-    }] : []),
+    nombre_plan: "",
+    info_gigas_plan: "",
+    precio_mensual_plan: "",
+    precio_mensual_plan_normal: "",
+    meses_plan_promocional: "",
+    planes: phone?.planes || [],
     especificaciones: phone?.especificaciones || {
       pantalla: { tipo: "", pulgadas: "", resolucion: "", tasa_refresco: "", proteccion: "" },
       bateria: { capacidad: "", carga_rapida: "", carga_inalambrica: "" },
@@ -79,18 +73,18 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
   const [newColorName, setNewColorName] = useState("")
   const [newColorHex, setNewColorHex] = useState("#000000")
 
-  const [newPlan, setNewPlan] = useState({
-    nombre: "",
-    gigas: "",
-    precio_mensual: "",
-    precio_mensual_normal: "",
-    meses_promocion: "",
-  })
-
-  const [editingPlanIndex, setEditingPlanIndex] = useState<number | null>(null)
-
   const [selectedTags, setSelectedTags] = useState<string[]>(phone?.tags?.map((t) => t.id) || [])
   const [selectedBoxContents, setSelectedBoxContents] = useState<string[]>(phone?.box_contents?.map((bc) => bc.id) || [])
+  const [availablePlanes, setAvailablePlanes] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchPlanes = async () => {
+      const supabase = createClient()
+      const { data } = await supabase.from("planes").select("*").order("precio_mensual", { ascending: true })
+      if (data) setAvailablePlanes(data)
+    }
+    fetchPlanes()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -175,67 +169,29 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
     }))
   }
 
-  const handleAddPlan = () => {
-    if (!newPlan.nombre || !newPlan.precio_mensual) return
-
-    const planData = {
-      nombre: newPlan.nombre,
-      gigas: newPlan.gigas,
-      precio_mensual: Number(newPlan.precio_mensual),
-      precio_mensual_normal: Number(newPlan.precio_mensual_normal),
-      meses_promocion: Number(newPlan.meses_promocion),
-    }
-
-    if (editingPlanIndex !== null) {
-      setFormData((prev) => {
-        const updatedPlanes = [...(prev.planes || [])]
-        updatedPlanes[editingPlanIndex] = planData
-        return { ...prev, planes: updatedPlanes }
-      })
-      setEditingPlanIndex(null)
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        planes: [...(prev.planes || []), planData],
-      }))
-    }
-
-    setNewPlan({
-      nombre: "",
-      gigas: "",
-      precio_mensual: "",
-      precio_mensual_normal: "",
-      meses_promocion: "",
+  const handleTogglePlan = (plan: any) => {
+    setFormData((prev) => {
+      const currentPlanes = prev.planes || []
+      const exists = currentPlanes.some((p) => p.nombre === plan.nombre)
+      
+      if (exists) {
+        return {
+          ...prev,
+          planes: currentPlanes.filter((p) => p.nombre !== plan.nombre)
+        }
+      } else {
+        return {
+          ...prev,
+          planes: [...currentPlanes, {
+            nombre: plan.nombre,
+            gigas: plan.gigas,
+            precio_mensual: plan.precio_mensual,
+            precio_mensual_normal: plan.precio_mensual_normal,
+            meses_promocion: plan.meses_promocion
+          }]
+        }
+      }
     })
-  }
-
-  const handleEditPlan = (index: number) => {
-    const plan = formData.planes![index]
-    setNewPlan({
-      nombre: plan.nombre,
-      gigas: plan.gigas,
-      precio_mensual: plan.precio_mensual.toString(),
-      precio_mensual_normal: plan.precio_mensual_normal.toString(),
-      meses_promocion: plan.meses_promocion.toString(),
-    })
-    setEditingPlanIndex(index)
-  }
-
-  const handleRemovePlan = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      planes: (prev.planes || []).filter((_, i) => i !== index),
-    }))
-    if (editingPlanIndex === index) {
-      setEditingPlanIndex(null)
-      setNewPlan({
-        nombre: "",
-        gigas: "",
-        precio_mensual: "",
-        precio_mensual_normal: "",
-        meses_promocion: "",
-      })
-    }
   }
 
   const handleAddExtra = (category: string, label: string, value: string) => {
@@ -414,11 +370,11 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
       tiene_almacenamiento_expandible: formData.tiene_almacenamiento_expandible,
       colores: formData.colores,
       incluye_plan: formData.incluye_plan,
-      nombre_plan: formData.incluye_plan ? formData.nombre_plan : null,
-      info_gigas_plan: formData.incluye_plan ? formData.info_gigas_plan : null,
-      precio_mensual_plan: formData.incluye_plan ? Number.parseFloat(formData.precio_mensual_plan) : null,
-      precio_mensual_plan_normal: formData.incluye_plan ? Number.parseFloat(formData.precio_mensual_plan_normal) : null,
-      meses_plan_promocional: formData.incluye_plan ? Number.parseInt(formData.meses_plan_promocional) : null,
+      nombre_plan: null,
+      info_gigas_plan: null,
+      precio_mensual_plan: null,
+      precio_mensual_plan_normal: null,
+      meses_plan_promocional: null,
       planes: formData.incluye_plan ? formData.planes : [],
       especificaciones: formData.especificaciones,
       updated_at: new Date().toISOString(),
@@ -1178,120 +1134,44 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
         </CardHeader>
         {formData.incluye_plan && (
           <CardContent className="space-y-6">
-            {/* List of added plans */}
-            {formData.planes && formData.planes.length > 0 && (
-              <div className="space-y-3">
-                <Label>Planes Agregados</Label>
-                {formData.planes.map((plan, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                    <div className="grid gap-1">
-                      <p className="font-medium text-sm">{plan.nombre}</p>
-                      <div className="flex gap-2 text-xs text-muted-foreground">
-                        <span>{plan.gigas}</span>
-                        <span>•</span>
-                        <span>${plan.precio_mensual}</span>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Seleccionar Planes Disponibles</Label>
+                <Link href="/admin/planes" target="_blank" className="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                  Gestionar Planes <Plus className="w-3 h-3" />
+                </Link>
+              </div>
+              
+              {availablePlanes.length === 0 ? (
+                <div className="text-center p-4 border rounded-lg bg-muted/20 text-muted-foreground text-sm">
+                  No hay planes registrados en el sistema.
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {availablePlanes.map((plan) => {
+                    const isSelected = formData.planes?.some(p => p.nombre === plan.nombre)
+                    return (
+                      <div 
+                        key={plan.id} 
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${isSelected ? 'bg-blue-50 border-blue-200' : 'bg-white hover:bg-slate-50'}`}
+                      >
+                        <div className="grid gap-1">
+                          <p className="font-medium text-sm">{plan.nombre}</p>
+                          <div className="flex gap-2 text-xs text-muted-foreground">
+                            <span>{plan.gigas}</span>
+                            <span>•</span>
+                            <span>${plan.precio_mensual}</span>
+                          </div>
+                        </div>
+                        <Switch
+                          checked={isSelected}
+                          onCheckedChange={() => handleTogglePlan(plan)}
+                        />
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-primary"
-                        onClick={() => handleEditPlan(index)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleRemovePlan(index)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Add New Plan Form */}
-            <div className="grid gap-4 p-4 border rounded-lg bg-muted/10">
-              <h4 className="font-medium text-sm flex items-center gap-2">
-                {editingPlanIndex !== null ? <Pencil className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                {editingPlanIndex !== null ? "Editar Plan" : "Agregar Nuevo Plan"}
-              </h4>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label htmlFor="new_plan_nombre">Nombre del Plan</Label>
-                  <Input
-                    id="new_plan_nombre"
-                    value={newPlan.nombre}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, nombre: e.target.value }))}
-                    placeholder="Plan MAX L LIBRE"
-                  />
+                    )
+                  })}
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="new_plan_gigas">Gigas</Label>
-                  <Input
-                    id="new_plan_gigas"
-                    value={newPlan.gigas}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, gigas: e.target.value }))}
-                    placeholder="300GB"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="new_plan_precio">Precio Mensual (Oferta)</Label>
-                  <Input
-                    id="new_plan_precio"
-                    type="number"
-                    value={newPlan.precio_mensual}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, precio_mensual: e.target.value }))}
-                    placeholder="7990"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="new_plan_precio_normal">Precio Mensual (Normal)</Label>
-                  <Input
-                    id="new_plan_precio_normal"
-                    type="number"
-                    value={newPlan.precio_mensual_normal}
-                    onChange={(e) => setNewPlan((prev) => ({ ...prev, precio_mensual_normal: e.target.value }))}
-                    placeholder="14990"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <Label htmlFor="new_plan_meses">¿Tiene Meses Promoción?</Label>
-                    <Switch
-                      checked={!!newPlan.meses_promocion && Number(newPlan.meses_promocion) > 0}
-                      onCheckedChange={(checked) => {
-                         setNewPlan(prev => ({ ...prev, meses_promocion: checked ? "6" : "" }))
-                      }}
-                    />
-                  </div>
-                  {!!newPlan.meses_promocion && Number(newPlan.meses_promocion) > 0 && (
-                    <Input
-                      id="new_plan_meses"
-                      type="number"
-                      value={newPlan.meses_promocion}
-                      onChange={(e) => setNewPlan((prev) => ({ ...prev, meses_promocion: e.target.value }))}
-                      placeholder="Ej: 6"
-                    />
-                  )}
-                </div>
-              </div>
-              <Button
-                type="button"
-                onClick={handleAddPlan}
-                disabled={!newPlan.nombre || !newPlan.precio_mensual}
-                variant="secondary"
-                className="w-full"
-              >
-                {editingPlanIndex !== null ? "Actualizar Plan" : "Agregar a la lista"}
-              </Button>
+              )}
             </div>
           </CardContent>
         )}
