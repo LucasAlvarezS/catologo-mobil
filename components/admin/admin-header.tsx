@@ -37,6 +37,12 @@ export function AdminHeader({ user }: AdminHeaderProps) {
           </Button>
 
           <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin/tags">
+              Gestionar Tags
+            </Link>
+          </Button>
+
+          <Button variant="ghost" size="sm" asChild>
             <Link href="/" target="_blank">
               <ExternalLink className="w-4 h-4 mr-2" />
               Ver Catálogo
