@@ -21,10 +21,9 @@ import { ImageUpload } from "@/components/admin/image-upload"
 interface PhoneFormProps {
   phone?: TelefonoWithTags
   tags: Tag[]
-  boxContents: BoxContent[]
 }
 
-export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
+export function PhoneForm({ phone, tags }: PhoneFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -74,7 +73,6 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
   const [newColorHex, setNewColorHex] = useState("#000000")
 
   const [selectedTags, setSelectedTags] = useState<string[]>(phone?.tags?.map((t) => t.id) || [])
-  const [selectedBoxContents, setSelectedBoxContents] = useState<string[]>(phone?.box_contents?.map((bc) => bc.id) || [])
   const [availablePlanes, setAvailablePlanes] = useState<any[]>([])
 
   useEffect(() => {
@@ -146,10 +144,6 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
 
   const toggleTag = (tagId: string) => {
     setSelectedTags((prev) => (prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]))
-  }
-
-  const toggleBoxContent = (contentId: string) => {
-    setSelectedBoxContents((prev) => (prev.includes(contentId) ? prev.filter((id) => id !== contentId) : [...prev, contentId]))
   }
 
   const handleAddColor = () => {
@@ -410,19 +404,6 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
             tag_id: tagId,
           }))
           await supabase.from("telefono_tags").insert(tagInserts)
-        }
-
-        // Update box contents
-        // Remove existing box contents
-        await supabase.from("phone_box_contents").delete().eq("phone_id", phoneId)
-
-        // Add selected box contents
-        if (selectedBoxContents.length > 0) {
-          const boxContentInserts = selectedBoxContents.map((contentId) => ({
-            phone_id: phoneId,
-            box_content_id: contentId,
-          }))
-          await supabase.from("phone_box_contents").insert(boxContentInserts)
         }
       }
 
@@ -1291,32 +1272,7 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
         </CardContent>
       </Card>
 
-      {/* Box Contents */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Contenido de la Caja</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {boxContents.map((content) => (
-              <div
-                key={content.id}
-                className="flex items-center space-x-3 p-3 rounded-md border hover:bg-muted/50 transition-colors"
-              >
-                <Checkbox
-                  id={content.id}
-                  checked={selectedBoxContents.includes(content.id)}
-                  onCheckedChange={() => toggleBoxContent(content.id)}
-                />
-                <Label htmlFor={content.id} className="flex-1 cursor-pointer font-normal flex items-center gap-2">
-                  {/* You can render icon here if you want, e.g. using a mapping or dynamic icon */}
-                  {content.name}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Status */}
       <Card>
