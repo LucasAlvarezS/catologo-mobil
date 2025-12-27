@@ -187,7 +187,9 @@ export function PhoneForm({ phone, tags, boxContents }: PhoneFormProps) {
             gigas: plan.gigas,
             precio_mensual: plan.precio_mensual,
             precio_mensual_normal: plan.precio_mensual_normal,
-            meses_promocion: plan.meses_promocion
+            meses_promocion: plan.meses_promocion,
+            redes_sociales: plan.redes_sociales,
+            linea_adicional: plan.linea_adicional
           }]
         }
       }

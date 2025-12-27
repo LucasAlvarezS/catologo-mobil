@@ -274,7 +274,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     {/* Plan Selection Carousel */}
                     <div className="space-y-4">
                       <h3 className="font-semibold text-slate-900">ELIGE TU PLAN</h3>
-                      <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+                      <div className="flex overflow-x-auto py-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
                         {availablePlans.map((plan, idx) => (
                           <div key={idx} className="snap-center shrink-0">
                             <PlanCard 
@@ -303,8 +303,8 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     )}
 
                     {/* Roaming Info */}
-                    <div className="relative mt-6 bg-orange-500 rounded-2xl p-6 text-white shadow-lg overflow-hidden">
-                      <div className="absolute top-0 left-6 bg-white text-orange-600 px-4 py-1 rounded-b-lg font-bold text-sm tracking-wider shadow-sm">
+                    <div className="relative mt-6 bg-slate-900 rounded-2xl p-6 text-white shadow-lg overflow-hidden">
+                      <div className="absolute top-0 left-6 bg-white text-slate-900 px-4 py-1 rounded-b-lg font-bold text-sm tracking-wider shadow-sm">
                         ROAMING
                       </div>
                       <div className="mt-4 space-y-3">

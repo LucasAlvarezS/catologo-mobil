@@ -36,12 +36,12 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
       onClick={onClick}
       className={cn(
         "relative w-full max-w-[280px] rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 transform hover:scale-105",
-        "bg-gradient-to-b from-red-600 to-red-700 text-white shadow-xl",
-        isSelected ? "ring-4 ring-offset-2 ring-red-600 scale-105" : "opacity-90 hover:opacity-100"
+        "bg-gradient-to-b from-blue-600 to-blue-700 text-white shadow-xl",
+        isSelected ? "ring-4 ring-blue-600 scale-105" : "opacity-90 hover:opacity-100"
       )}
     >
       {/* Header */}
-      <div className="bg-red-800/30 p-4 text-center">
+      <div className="bg-blue-800/30 p-4 text-center">
         <h3 className="text-2xl font-black tracking-wider uppercase">PLAN {plan.nombre}</h3>
       </div>
 
@@ -65,7 +65,7 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
                 const Icon = SOCIAL_ICONS[network]
                 if (!Icon) return null
                 return (
-                  <div key={network} className="p-1.5 bg-white rounded-full text-red-600" title={network}>
+                  <div key={network} className="p-1.5 bg-white rounded-full text-blue-600" title={network}>
                     <Icon className="w-4 h-4" />
                   </div>
                 )
@@ -91,7 +91,7 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
 
         {/* Price */}
         <div className="mt-auto pt-4 text-center w-full">
-          <div className="bg-white text-red-600 py-2 px-6 rounded-full font-black text-2xl shadow-lg transform hover:scale-105 transition-transform">
+          <div className="bg-white text-blue-600 py-2 px-6 rounded-full font-black text-2xl shadow-lg transform hover:scale-105 transition-transform">
             {formatPrice(plan.precio_mensual)}
           </div>
           {plan.meses_promocion > 0 && (
