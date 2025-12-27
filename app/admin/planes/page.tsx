@@ -113,10 +113,16 @@ export default function PlanesManagerPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de eliminar este plan?")) return
+    if (!confirm("¿Estás seguro de eliminar este plan? Esta acción también lo eliminará de todos los teléfonos asociados.")) return
 
-    const { error } = await supabase.from("planes").delete().eq("id", id)
-    if (!error) fetchPlanes()
+    const { error } = await supabase.rpc('delete_plan_cascade', { target_plan_id: id })
+    
+    if (error) {
+      console.error("Error deleting plan:", error)
+      alert("Error al eliminar el plan")
+    } else {
+      fetchPlanes()
+    }
   }
 
   const handleToggleSocial = async (plan: Plan, checked: boolean) => {
