@@ -51,8 +51,6 @@ function StatsSkeleton() {
   )
 }
 
-import { TagDialog } from "@/components/admin/tag-dialog"
-
 export default async function AdminDashboard() {
   const [stats, phones] = await Promise.all([getStats(), getPhones()])
 
@@ -64,7 +62,11 @@ export default async function AdminDashboard() {
           <p className="text-muted-foreground">Administra tu catálogo de teléfonos</p>
         </div>
         <div className="flex gap-2">
-          <TagDialog />
+          <Link href="/admin/tags">
+            <Button variant="outline" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700">
+              <Tag className="mr-2 h-4 w-4" /> Gestionar Tags
+            </Button>
+          </Link>
           
           {/* NUEVO BOTÓN PARA GESTIONAR PLANES */}
           <Link href="/admin/planes">

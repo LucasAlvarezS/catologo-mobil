@@ -38,6 +38,7 @@ interface Plan {
   portabilidad_exclusiva: boolean
   meses_promocion: number
   linea_adicional: boolean
+  descripcion?: string
 }
 
 const SOCIAL_NETWORKS = [
@@ -67,7 +68,8 @@ export default function PlanesManagerPage() {
     redes_sociales: ["Facebook", "Instagram", "WhatsApp"],
     portabilidad_exclusiva: false,
     meses_promocion: 0,
-    linea_adicional: false
+    linea_adicional: false,
+    descripcion: "Navegación de alta velocidad en la red más rápida"
   })
 
   useEffect(() => {
@@ -158,7 +160,8 @@ export default function PlanesManagerPage() {
       redes_sociales: ["Facebook", "Instagram", "WhatsApp"],
       portabilidad_exclusiva: false,
       meses_promocion: 0,
-      linea_adicional: false
+      linea_adicional: false,
+      descripcion: "Navegación de alta velocidad en la red más rápida"
     })
   }
 
@@ -252,6 +255,15 @@ export default function PlanesManagerPage() {
                     placeholder="0"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Descripción del Plan</Label>
+                <Input 
+                  value={formData.descripcion || ""} 
+                  onChange={(e) => setFormData({...formData, descripcion: e.target.value})}
+                  placeholder="Navegación de alta velocidad..."
+                />
               </div>
 
               <div className="flex items-center space-x-2 p-3 border rounded-lg">

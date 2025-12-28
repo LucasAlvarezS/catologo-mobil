@@ -10,6 +10,7 @@ interface PlanCardProps {
     meses_promocion: number
     redes_sociales?: string[]
     linea_adicional?: boolean
+    descripcion?: string
   }
   isSelected?: boolean
   onClick?: () => void
@@ -82,12 +83,13 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
           <div className="text-left">
             <p className="font-bold text-lg leading-none">MINUTOS</p>
             <p className="font-medium text-sm opacity-90">LIBRES</p>
+            <p className="text-[10px] opacity-75 leading-tight mt-0.5">solo a 300 números diferentes por mes</p>
           </div>
         </div>
 
         {/* Description */}
         <p className="text-center text-xs opacity-80 px-2">
-          Navegación de alta velocidad en la red más rápida
+          {plan.descripcion || "Navegación de alta velocidad en la red más rápida"}
         </p>
 
         {/* Additional Line Info */}

@@ -52,6 +52,7 @@ export interface Telefono {
     meses_promocion: number
     redes_sociales?: string[]
     linea_adicional?: boolean
+    descripcion?: string
   }[] | null
   especificaciones?: {
     software?: {

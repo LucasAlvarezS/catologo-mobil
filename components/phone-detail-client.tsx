@@ -174,7 +174,7 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
             </div>
 
             {/* Info Section - Premium Sales Focused */}
-            <div className="space-y-6 sm:space-y-8 py-2">
+            <div className="space-y-6 sm:space-y-8 py-2 min-w-0">
               {/* Title & Brand */}
               <div className="space-y-2 text-center">
                 <p className="text-sm text-blue-600 font-bold uppercase tracking-widest">{phone.marca}</p>
@@ -272,9 +272,9 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                     </div>
 
                     {/* Plan Selection Carousel */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 w-full max-w-full">
                       <h3 className="font-semibold text-slate-900">ELIGE TU PLAN</h3>
-                      <div className="flex overflow-x-auto py-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide pb-8">
+                      <div className="flex overflow-x-auto py-6 gap-4 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide pb-8 w-full">
                         {availablePlans.map((plan, idx) => (
                           <div key={idx} className="snap-center shrink-0 w-[260px] sm:w-[280px]">
                             <PlanCard 

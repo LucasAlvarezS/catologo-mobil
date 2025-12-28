@@ -183,7 +183,8 @@ export function PhoneForm({ phone, tags }: PhoneFormProps) {
             precio_mensual_normal: plan.precio_mensual_normal,
             meses_promocion: plan.meses_promocion,
             redes_sociales: plan.redes_sociales,
-            linea_adicional: plan.linea_adicional
+            linea_adicional: plan.linea_adicional,
+            descripcion: plan.descripcion
           }]
         }
       }
