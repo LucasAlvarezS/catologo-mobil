@@ -61,21 +61,21 @@ export default async function AdminDashboard() {
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Administra tu catálogo de teléfonos</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 w-full sm:w-auto max-w-full">
           <Link href="/admin/tags">
-            <Button variant="outline" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700">
+            <Button variant="outline" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700 whitespace-nowrap">
               <Tag className="mr-2 h-4 w-4" /> Gestionar Tags
             </Button>
           </Link>
           
           {/* NUEVO BOTÓN PARA GESTIONAR PLANES */}
           <Link href="/admin/planes">
-            <Button variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+            <Button variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700 whitespace-nowrap">
               <CreditCard className="mr-2 h-4 w-4" /> Gestionar Planes
             </Button>
           </Link>
 
-          <Button asChild>
+          <Button asChild className="whitespace-nowrap">
             <Link href="/admin/telefonos/nuevo">
               <Plus className="w-4 h-4 mr-2" />
               Nuevo Teléfono
