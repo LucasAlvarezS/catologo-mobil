@@ -91,8 +91,17 @@ export function PhoneCard({ phone }: PhoneCardProps) {
                 <>
                   <div className="flex flex-col items-center">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-emerald-600">{formatPrice(phone.precio_plan || phone.precio_lista)}</span>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Con Plan</span>
+                      {phone.precio_portabilidad ? (
+                        <>
+                          <span className="text-xl font-bold text-red-600">{formatPrice(phone.precio_portabilidad)}</span>
+                          <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Portabilidad</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-xl font-bold text-emerald-600">{formatPrice(phone.precio_plan || phone.precio_lista)}</span>
+                          <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Con Plan</span>
+                        </>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Plan desde {formatPrice(minPlanPrice)}/mes

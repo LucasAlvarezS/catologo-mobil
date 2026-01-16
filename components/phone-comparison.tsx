@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Check, Sparkles, Loader2, DollarSign, Smartphone, Gift, Zap, HardDrive, Cpu, Battery, Camera, Monitor, Lightbulb } from "lucide-react"
+import { X, Check, Sparkles, Loader2, DollarSign, Smartphone, Gift, Zap, HardDrive, Cpu, Battery, Camera, Monitor, Lightbulb, ArrowLeftRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatPrice } from "@/lib/utils"
 import Image from "next/image"
@@ -33,6 +33,8 @@ export function PhoneComparison({ phones, onClose }: Readonly<PhoneComparisonPro
   }
 
   const specs = [
+    { key: "precio_portabilidad", label: <><ArrowLeftRight className="w-4 h-4 inline mr-2" /> Precio Portabilidad</>, format: (v: any) => (v ? formatPrice(v) : "-"), type: "price" },
+    { key: "precio_tarjeta_hites", label: <><DollarSign className="w-4 h-4 inline mr-2" /> Precio Hites</>, format: (v: any) => (v ? formatPrice(v) : "-"), type: "price" },
     { key: "precio_plan", label: <><Smartphone className="w-4 h-4 inline mr-2" /> Precio con Plan</>, format: (v: any) => (v ? formatPrice(v) : "-"), type: "price" },
     { key: "precio_lista", label: <><DollarSign className="w-4 h-4 inline mr-2" /> Precio Lista</>, format: (v: any) => formatPrice(v), type: "price" },
     { key: "precio_descuento", label: <><Gift className="w-4 h-4 inline mr-2" /> Precio Descuento</>, format: (v: any) => (v ? formatPrice(v) : "-"), type: "price" },

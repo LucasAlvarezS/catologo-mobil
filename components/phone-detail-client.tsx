@@ -226,12 +226,12 @@ export function PhoneDetailClient({ phone, allPhones }: PhoneDetailClientProps) 
                       <div className="bg-red-50 rounded-xl p-4 sm:p-5 border-2 border-red-100 relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="w-full sm:w-auto">
                           <p className="text-red-800 font-semibold text-base mb-1">Precio con Portabilidad</p>
-                          <span className="text-3xl sm:text-4xl font-bold text-red-900 block">{formatPrice(basePrice)}</span>
+                          <span className="text-3xl sm:text-4xl font-bold text-red-900 block">{formatPrice(phone.precio_portabilidad || basePrice)}</span>
                         </div>
                         <div className="w-full sm:w-auto text-left sm:text-right">
-                           {phone.precio_lista > basePrice && (
+                           {phone.precio_lista > (phone.precio_portabilidad || basePrice) && (
                              <div className="bg-red-100 text-red-700 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold inline-block">
-                               Ahorras: {formatPrice(phone.precio_lista - basePrice)}
+                               Ahorras: {formatPrice(phone.precio_lista - (phone.precio_portabilidad || basePrice))}
                              </div>
                            )}
                         </div>
