@@ -57,7 +57,6 @@ export function PlanCard({ plan, isSelected, onClick }: PlanCardProps) {
             <span className="text-5xl font-black">{plan.gigas.replace(/\D/g, '')}</span>
           </div>
           <p className="text-xl font-bold tracking-widest">GIGAS</p>
-          <p className="text-sm font-medium opacity-90">LIBRES</p>
         </div>
 
         {/* Social Media Icons */}
