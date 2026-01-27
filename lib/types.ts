@@ -32,6 +32,7 @@ export interface Telefono {
   foto_url_2: string | null
   foto_url_3: string | null
   activo: boolean
+  destacado_oferta?: boolean
   stock: number
   tiene_ram_virtual?: boolean
   tiene_almacenamiento_expandible?: boolean

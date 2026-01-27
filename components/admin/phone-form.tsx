@@ -49,6 +49,7 @@ export function PhoneForm({ phone, tags }: PhoneFormProps) {
     foto_url_2: phone?.foto_url_2 || "",
     foto_url_3: phone?.foto_url_3 || "",
     activo: phone?.activo ?? true,
+    destacado_oferta: phone?.destacado_oferta ?? false,
     stock: phone?.stock?.toString() || "0",
     tiene_ram_virtual: phone?.tiene_ram_virtual ?? false,
     tiene_almacenamiento_expandible: phone?.tiene_almacenamiento_expandible ?? false,
@@ -362,6 +363,7 @@ export function PhoneForm({ phone, tags }: PhoneFormProps) {
       foto_url_2: formData.foto_url_2 || null,
       foto_url_3: formData.foto_url_3 || null,
       activo: formData.activo,
+      destacado_oferta: formData.destacado_oferta,
       stock: Number.parseInt(formData.stock) || 0,
       tiene_ram_virtual: formData.tiene_ram_virtual,
       tiene_almacenamiento_expandible: formData.tiene_almacenamiento_expandible,
@@ -1278,17 +1280,40 @@ export function PhoneForm({ phone, tags }: PhoneFormProps) {
       {/* Status */}
       <Card>
         <CardHeader>
-          <CardTitle>Estado</CardTitle>
+          <CardTitle>Configuración de Estado</CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center gap-4">
-          <Switch
-            id="activo"
-            checked={formData.activo}
-            onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, activo: checked }))}
-          />
-          <Label htmlFor="activo" className="cursor-pointer">
-            {formData.activo ? "Visible en catálogo" : "Oculto del catálogo"}
-          </Label>
+        <CardContent className="grid gap-6 sm:grid-cols-2">
+          <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+            <div className="space-y-0.5">
+              <Label htmlFor="activo" className="text-base font-semibold">
+                Visible en Catálogo
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                 {formData.activo ? "El teléfono es visible para todos" : "El teléfono está oculto"}
+              </p>
+            </div>
+            <Switch
+              id="activo"
+              checked={formData.activo}
+              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, activo: checked }))}
+            />
+          </div>
+
+          <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+            <div className="space-y-0.5">
+              <Label htmlFor="destacado_oferta" className="text-base font-semibold">
+                Destacar Oferta
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Muestra en carrusel principal
+              </p>
+            </div>
+            <Switch
+              id="destacado_oferta"
+              checked={formData.destacado_oferta}
+              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, destacado_oferta: checked }))}
+            />
+          </div>
         </CardContent>
       </Card>
 

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"
 import { PhoneFilters } from "@/components/phone-filters"
 import { PhoneGrid } from "@/components/phone-grid"
+import { FeaturedCarousel } from "@/components/featured-carousel"
 import type { TelefonoWithTags, Tag } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -77,6 +78,41 @@ async function getPhones(searchParams: SearchParams): Promise<TelefonoWithTags[]
   return phones
 }
 
+async function getFeaturedPhones(): Promise<TelefonoWithTags[]> {
+  const supabase = await createClient()
+
+  // Intentamos obtener los destacados. Si el campo no existe, esto fallará silenciosamente o retornará error.
+  // Asumiremos que el usuario ha agregado el campo a la DB como se le indicará.
+  const { data, error } = await supabase
+    .from("telefonos")
+    .select(`
+      *,
+      telefono_tags (
+        tag_id,
+        tags (
+          id,
+          nombre,
+          descripcion,
+          color
+        )
+      )
+    `)
+    .eq("activo", true)
+    .eq("destacado_oferta", true)
+    .order("created_at", { ascending: false })
+    .limit(5)
+
+  if (error || !data) {
+    // Si falla (ej: columna no existe), retornamos array vacío
+    return []
+  }
+
+  return data.map((phone: any) => ({
+    ...phone,
+    tags: phone.telefono_tags?.map((tt: any) => tt.tags).filter(Boolean) || [],
+  }))
+}
+
 async function getBrands(): Promise<string[]> {
   const supabase = await createClient()
   const { data } = await supabase.from("telefonos").select("marca").eq("activo", true)
@@ -128,42 +164,54 @@ export default async function HomePage({
   const [phones, brands, tags, maxPrice] = await Promise.all([getPhones(params), getBrands(), getTags(), getMaxPrice()])
 
   const hasFilters = params.q || params.marca || params.tags || params.min_price || params.max_price
+  
+  // Fetch featured phones only if no filters are active
+  const featuredPhones = !hasFilters ? await getFeaturedPhones() : []
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="relative mb-12 py-20 md:py-32 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 shadow-2xl mx-auto w-full">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
-          
-          <div className="relative z-10 px-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <div className="space-y-4 max-w-4xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
-                Revisa si puedes <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">portar tu número</span>
-              </h1>
-            </div>
+        
+        {/* Featured Carousel or Hero */}
+        {!hasFilters && (
+          <>
+            {featuredPhones.length > 0 ? (
+              <FeaturedCarousel phones={featuredPhones} />
+            ) : (
+              <div className="relative mb-12 py-20 md:py-32 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 shadow-2xl mx-auto w-full">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
+                
+                <div className="relative z-10 px-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                  <div className="space-y-4 max-w-4xl mx-auto">
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
+                      Revisa si puedes <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">portar tu número</span>
+                    </h1>
+                  </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Button 
-                asChild 
-                size="lg" 
-                className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-xl h-16 px-10 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-full"
-              >
-                <a 
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola Diego!, Me gustaria saber si puedo portarme a tu compañía.")}`}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2"
-                >
-                  <MessageCircle className="w-6 h-6" />
-                  Consultar Portabilidad
-                </a>
-              </Button>
-            </div>
-          </div>
-        </div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <Button 
+                      asChild 
+                      size="lg" 
+                      className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-xl h-16 px-10 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-full"
+                    >
+                      <a 
+                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola Diego!, Me gustaria saber si puedo portarme a tu compañía.")}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <MessageCircle className="w-6 h-6" />
+                        Consultar Portabilidad
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Categories (only show when no filters active) */}
         
