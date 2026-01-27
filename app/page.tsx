@@ -173,44 +173,47 @@ export default async function HomePage({
       <Header />
       <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
         
-        {/* Featured Carousel or Hero */}
+        {/* Featured Carousel and Hero */}
         {!hasFilters && (
-          <>
-            {featuredPhones.length > 0 ? (
+          <div className="space-y-8 mb-12">
+            
+            {/* Featured Carousel */}
+            {featuredPhones.length > 0 && (
               <FeaturedCarousel phones={featuredPhones} />
-            ) : (
-              <div className="relative mb-12 py-20 md:py-32 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 shadow-2xl mx-auto w-full">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
-                
-                <div className="relative z-10 px-4 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                  <div className="space-y-4 max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
-                      Revisa si puedes <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">portar tu número</span>
-                    </h1>
-                  </div>
+            )}
 
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <Button 
-                      asChild 
-                      size="lg" 
-                      className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-xl h-16 px-10 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-full"
+            {/* Portability Hero Banner */}
+            <div className="relative py-16 md:py-24 text-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 shadow-2xl mx-auto w-full">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
+              
+              <div className="relative z-10 px-4 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <div className="space-y-2 max-w-4xl mx-auto">
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight">
+                    Revisa si puedes <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">portar tu número</span>
+                  </h1>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                  <Button 
+                    asChild 
+                    size="lg" 
+                    className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold text-lg h-14 px-8 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-full"
+                  >
+                    <a 
+                      href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola Diego!, Me gustaria saber si puedo portarme a tu compañía.")}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2"
                     >
-                      <a 
-                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("¡Hola Diego!, Me gustaria saber si puedo portarme a tu compañía.")}`}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <MessageCircle className="w-6 h-6" />
-                        Consultar Portabilidad
-                      </a>
-                    </Button>
-                  </div>
+                      <MessageCircle className="w-5 h-5" />
+                      Consultar Portabilidad
+                    </a>
+                  </Button>
                 </div>
               </div>
-            )}
-          </>
+            </div>
+          </div>
         )}
 
         {/* Categories (only show when no filters active) */}
