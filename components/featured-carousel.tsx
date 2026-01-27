@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { TelefonoWithTags } from "@/lib/types"
 import { formatPrice } from "@/lib/utils"
-import { ChevronLeft, ChevronRight, Zap, ArrowRight, Timer } from "lucide-react"
+import { ChevronLeft, ChevronRight, Flame, ArrowRight, Timer } from "lucide-react"
 
 export function FeaturedCarousel({ phones }: { phones: TelefonoWithTags[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -26,9 +26,9 @@ export function FeaturedCarousel({ phones }: { phones: TelefonoWithTags[] }) {
     <div className="w-full max-w-5xl mx-auto mb-10 overflow-hidden py-4">
       <div className="flex items-center justify-center gap-2 mb-6">
         <div className="bg-amber-500 rounded-full p-1.5 animate-pulse">
-          <Zap className="w-4 h-4 text-white fill-white" />
+          <Flame className="w-4 h-4 text-white fill-white" />
         </div>
-        <h2 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Oportunidades Flash</h2>
+        <h2 className="text-xl font-bold text-slate-800 uppercase tracking-tight">LOS MÁS VENDIDOS</h2>
       </div>
       
       <div className="relative" ref={emblaRef}>
